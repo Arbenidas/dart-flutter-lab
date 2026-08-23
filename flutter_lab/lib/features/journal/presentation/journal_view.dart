@@ -111,9 +111,8 @@ class _Header extends StatelessWidget {
         final compact = constraints.maxWidth < 720;
         final title = Text(
           'BITÁCORA_01',
-          style: Theme.of(
-            context,
-          ).textTheme.displayLarge?.copyWith(fontSize: compact ? 38 : 60),
+          style: Theme.of(context).textTheme.displayLarge
+              ?.copyWith(fontSize: compact ? 38 : 60),
         );
         final counter = Container(
           decoration: BoxDecoration(

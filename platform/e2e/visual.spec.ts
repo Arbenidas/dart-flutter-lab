@@ -17,6 +17,9 @@ test('smoke: la portada conserva su composición visual en los tres anchos objet
     animations: 'disabled',
     fullPage: true,
     maxDiffPixelRatio: 0.03,
+    // Las fuentes locales conservan la composición, pero el antialiasing cambia
+    // ligeramente entre macOS y Linux (el entorno de CI).
+    threshold: 0.4,
   });
 });
 

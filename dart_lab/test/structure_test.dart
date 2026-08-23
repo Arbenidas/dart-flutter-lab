@@ -16,8 +16,7 @@ void main() {
       expect(
         declaration.variables.isConst,
         isTrue,
-        reason:
-            'El valor debe declararse con const, no solo construirse con const.',
+        reason: 'El valor debe declararse con const, no solo construirse con const.',
       );
     });
   });
@@ -138,9 +137,9 @@ void main() {
   group('m05-5 estructura', () {
     test('la version final usa map y toList', () {
       final body = _function('lib/m05_funciones.dart', 'transformarTodos').body;
-      final methodNames = _nodes<MethodInvocation>(
-        body,
-      ).map((node) => node.methodName.name).toSet();
+      final methodNames = _nodes<MethodInvocation>(body)
+          .map((node) => node.methodName.name)
+          .toSet();
 
       expect(methodNames, containsAll(<String>{'map', 'toList'}));
     });
@@ -152,15 +151,14 @@ void main() {
         'lib/m05_funciones.dart',
         'medirMilisegundos',
       ).body;
-      final methods = _nodes<MethodInvocation>(
-        body,
-      ).map((node) => node.methodName.name).toList();
+      final methods = _nodes<MethodInvocation>(body)
+          .map((node) => node.methodName.name)
+          .toList();
       final directActionCalls = _nodes<MethodInvocation>(body).where(
         (node) => node.target == null && node.methodName.name == 'accion',
       );
-      final expressionActionCalls = _nodes<FunctionExpressionInvocation>(
-        body,
-      ).where((node) => node.function.toSource() == 'accion');
+      final expressionActionCalls = _nodes<FunctionExpressionInvocation>(body)
+          .where((node) => node.function.toSource() == 'accion');
 
       expect(body.toSource(), contains('Stopwatch'));
       expect(methods, containsAll(<String>{'start', 'stop'}));
@@ -183,13 +181,13 @@ CompilationUnit _parse(String path) {
 }
 
 TopLevelVariableDeclaration _topLevelVariable(String path, String name) {
-  return _parse(
-    path,
-  ).declarations.whereType<TopLevelVariableDeclaration>().singleWhere(
-    (node) => node.variables.variables.any(
-      (variable) => variable.name.lexeme == name,
-    ),
-  );
+  return _parse(path).declarations
+      .whereType<TopLevelVariableDeclaration>()
+      .singleWhere(
+        (node) => node.variables.variables.any(
+          (variable) => variable.name.lexeme == name,
+        ),
+      );
 }
 
 FunctionExpression _function(String path, String name) {
