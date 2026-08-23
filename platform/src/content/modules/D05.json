@@ -1,0 +1,16 @@
+{
+  "id": "D05",
+  "trackId": "dart",
+  "order": 5,
+  "slug": "d05-colecciones-e-iterables",
+  "title": "Colecciones e iterables",
+  "summary": "Modela grupos de datos y transforma secuencias sin mutaciones accidentales.",
+  "status": "available",
+  "estimatedHours": 7,
+  "prerequisites": ["D04"],
+  "outcomes": [
+    "Elegir List, Set o Map según las invariantes del dominio.",
+    "Construir pipelines legibles con Iterable y evaluar su costo."
+  ],
+  "lessonIds": ["D05-L01"]
+}

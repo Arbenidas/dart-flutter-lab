@@ -1,0 +1,16 @@
+{
+  "id": "D14",
+  "trackId": "dart",
+  "order": 14,
+  "slug": "d14-testing-y-calidad",
+  "title": "Testing y calidad de diseño",
+  "summary": "Usa pruebas, lints y refactor seguro como herramientas para pensar mejor.",
+  "status": "available",
+  "estimatedHours": 9,
+  "prerequisites": ["D13"],
+  "outcomes": [
+    "Escribir pruebas que documenten comportamiento y casos borde.",
+    "Distinguir un doble útil de un mock que acopla la prueba a la implementación."
+  ],
+  "lessonIds": ["D14-L01"]
+}

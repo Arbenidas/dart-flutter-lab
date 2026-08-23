@@ -1,0 +1,16 @@
+{
+  "id": "F04",
+  "trackId": "flutter",
+  "order": 4,
+  "slug": "f04-datos-y-asincronia",
+  "title": "Datos, red y persistencia",
+  "summary": "Conecta la UI con fuentes externas mediante estados explícitos y límites claros.",
+  "status": "available",
+  "estimatedHours": 11,
+  "prerequisites": ["F03"],
+  "outcomes": [
+    "Representar loading, data, empty y error sin banderas contradictorias.",
+    "Separar serialización, acceso a datos y presentación."
+  ],
+  "lessonIds": ["F04-L01"]
+}

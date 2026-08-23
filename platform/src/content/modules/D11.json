@@ -1,0 +1,16 @@
+{
+  "id": "D11",
+  "trackId": "dart",
+  "order": 11,
+  "slug": "d11-concurrencia-e-isolates",
+  "title": "Concurrencia e isolates",
+  "summary": "Separa asincronía de paralelismo y mueve trabajo intensivo fuera del isolate principal.",
+  "status": "available",
+  "estimatedHours": 6,
+  "prerequisites": ["D10"],
+  "outcomes": [
+    "Identificar cuándo un Future no evita bloquear la ejecución.",
+    "Comunicar isolates mediante mensajes sin compartir memoria mutable."
+  ],
+  "lessonIds": ["D11-L01"]
+}

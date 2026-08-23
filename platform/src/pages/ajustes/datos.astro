@@ -1,0 +1,124 @@
+---
+import DataManager from '../../components/DataManager.astro';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Datos locales"
+  description="Exporta, restaura o borra el progreso local de Dart & Flutter Lab."
+>
+  <header class="page-head container">
+    <p class="eyebrow">Ajustes · Datos</p>
+    <h1>Tu trabajo vive contigo.</h1>
+    <p>
+      No hay cuenta ni sincronización en la nube. El progreso, las respuestas, los repasos y las
+      notas se guardan en este navegador.
+    </p>
+  </header>
+
+  <section class="privacy-strip container" aria-labelledby="privacy-title">
+    <h2 id="privacy-title">Qué significa “local”</h2>
+    <dl>
+      <div><dt>Guardado</dt><dd>IndexedDB de este origen</dd></div>
+      <div><dt>Transferencia</dt><dd>Solo mediante tu archivo JSON</dd></div>
+      <div><dt>Cuenta</dt><dd>No se solicita</dd></div>
+      <div><dt>Código</dt><dd>Permanece en tu proyecto local</dd></div>
+    </dl>
+  </section>
+
+  <div class="data-shell container">
+    <div class="backup-rule">
+      <p class="eyebrow">Antes de cambiar de equipo</p>
+      <p>
+        <strong>Exporta, conserva y luego restaura.</strong> El JSON es legible y sirve como copia; no
+        contiene los archivos Dart o Flutter de tu laboratorio.
+      </p>
+    </div>
+    <DataManager />
+    <noscript
+      ><p class="no-script panel">
+        Activa JavaScript para exportar, importar o borrar los datos de este navegador.
+      </p></noscript
+    >
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 12ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 60ch;
+    font-size: var(--text-md);
+  }
+
+  .privacy-strip {
+    display: grid;
+    gap: var(--space-lg);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .privacy-strip dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .privacy-strip dl div {
+    min-width: 0;
+    padding: var(--space-sm);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+    border-inline-end: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .privacy-strip dt {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .privacy-strip dd {
+    margin: 0;
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .data-shell {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xl);
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+
+  .backup-rule {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 66ch;
+    padding-inline-start: var(--space-md);
+    border-inline-start: var(--rule-strong) solid var(--color-acid);
+  }
+
+  .no-script {
+    padding: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .privacy-strip {
+      grid-template-columns: minmax(12rem, 0.45fr) minmax(0, 1.55fr);
+      align-items: start;
+    }
+
+    .privacy-strip dl {
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+    }
+  }
+</style>

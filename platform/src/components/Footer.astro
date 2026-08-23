@@ -1,0 +1,54 @@
+---
+import { SITE } from '../config';
+---
+
+<footer class="site-footer">
+  <p class="site-footer__statement">Lee el error. Abre la fuente. Escribe una hipótesis.</p>
+  <div class="site-footer__meta">
+    <strong>{SITE.shortName}</strong>
+    <span>Contenido {SITE.contentVersion}</span>
+    <a href="/metodo/">Método</a>
+    <a href="/ajustes/datos/">Privacidad local</a>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    display: grid;
+    gap: var(--space-xl);
+    margin-block-start: var(--space-3xl);
+    padding: var(--space-2xl) var(--page-gutter) calc(var(--space-xl) + env(safe-area-inset-bottom));
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-deep);
+  }
+
+  .site-footer__statement {
+    max-width: 28ch;
+    font-family: var(--font-display);
+    font-size: clamp(var(--text-xl), 5vw, var(--text-3xl));
+    letter-spacing: -0.035em;
+    line-height: 1.02;
+    text-wrap: balance;
+  }
+
+  .site-footer__meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-sm) var(--space-lg);
+    padding-block-start: var(--space-sm);
+    border-block-start: var(--rule-thin) solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .site-footer__meta span {
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 40rem) {
+    .site-footer__meta {
+      justify-content: space-between;
+    }
+  }
+</style>

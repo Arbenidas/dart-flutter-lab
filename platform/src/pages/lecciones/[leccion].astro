@@ -1,0 +1,414 @@
+---
+import { render } from 'astro:content';
+import LessonPractice from '../../components/LessonPractice.astro';
+import { getCatalog, lessonHref, moduleHref } from '../../lib/catalog';
+import { loadCanonicalReference } from '../../lib/reference';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+interface Props {
+  lessonId: string;
+}
+
+export async function getStaticPaths() {
+  const catalog = await getCatalog();
+  return catalog.lessons.map((lesson) => ({
+    params: { leccion: lesson.data.slug },
+    props: { lessonId: lesson.data.id },
+  }));
+}
+
+const { lessonId } = Astro.props as Props;
+const catalog = await getCatalog();
+const lesson = catalog.lessons.find((entry) => entry.data.id === lessonId);
+
+if (!lesson) {
+  throw new Error(`No se encontró la lección ${lessonId}.`);
+}
+
+const module = catalog.modules.find((entry) => entry.data.id === lesson.data.moduleId);
+const track = catalog.tracks.find((entry) => entry.data.id === lesson.data.trackId);
+const moduleOrder = new Map(catalog.modules.map((entry) => [entry.data.id, entry.data.order]));
+const trackOrder = new Map(catalog.tracks.map((entry) => [entry.data.id, entry.data.order]));
+const orderedLessons = [...catalog.lessons].sort((left, right) => {
+  const trackDifference =
+    (trackOrder.get(left.data.trackId) ?? 0) - (trackOrder.get(right.data.trackId) ?? 0);
+  if (trackDifference !== 0) return trackDifference;
+  const moduleDifference =
+    (moduleOrder.get(left.data.moduleId) ?? 0) - (moduleOrder.get(right.data.moduleId) ?? 0);
+  return moduleDifference || left.data.order - right.data.order;
+});
+const lessonIndex = orderedLessons.findIndex((entry) => entry.data.id === lesson.data.id);
+const previousLesson = lessonIndex > 0 ? orderedLessons[lessonIndex - 1] : undefined;
+const nextLesson = lessonIndex >= 0 ? orderedLessons[lessonIndex + 1] : undefined;
+const lessonLab = lesson.data.lab
+  ? {
+      workspace: lesson.data.lab.workspace,
+      targetPath: lesson.data.lab.targetPath,
+      testCommand: lesson.data.lab.testCommand,
+      analyzeCommand: lesson.data.lab.analyzeCommand,
+      ...(lesson.data.lab.exerciseId ? { exerciseId: lesson.data.lab.exerciseId } : {}),
+    }
+  : undefined;
+const canonicalReference = await loadCanonicalReference(lessonLab);
+const { Content, headings } = await render(lesson);
+const sectionHeadings = headings.filter((heading) => heading.depth === 2);
+const verifiedDate = new Intl.DateTimeFormat('es-419', {
+  day: 'numeric',
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout title={lesson.data.title} description={lesson.data.summary}>
+  <div data-pagefind-body data-pagefind-filter="route:lesson">
+    <nav class="breadcrumb container" aria-label="Migas de pan">
+      <a href="/ruta/">Ruta</a>
+      <span aria-hidden="true">/</span>
+      {
+        module ? (
+          <a href={moduleHref(module)}>{module.data.id}</a>
+        ) : (
+          <span>{lesson.data.moduleId}</span>
+        )
+      }
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{lesson.data.id}</span>
+    </nav>
+
+    <header class="lesson-head container" data-pagefind-filter={`track:${lesson.data.trackId}`}>
+      <div class="lesson-head__meta">
+        <span>{lesson.data.id}</span>
+        <span data-pagefind-filter={`module:${lesson.data.moduleId}`}
+          >{track?.data.title ?? lesson.data.trackId}</span
+        >
+        <span>{lesson.data.estimatedMinutes} min</span>
+      </div>
+      <h1>{lesson.data.title}</h1>
+      <p>{lesson.data.summary}</p>
+    </header>
+
+    <div class="lesson-layout container">
+      <article class="lesson-copy">
+        {
+          lessonLab?.workspace === 'dart_lab' && (
+            <section class="starter-sheet panel" aria-labelledby="starter-sheet-title">
+              <div>
+                <p class="eyebrow">Material local incluido</p>
+                <h2 id="starter-sheet-title">Este archivo sí viene en el starter</h2>
+                <p>
+                  Descarga y descomprime el laboratorio una sola vez. Después abre esta ruta exacta
+                  desde la carpeta descargada:
+                </p>
+              </div>
+              <code class="starter-sheet__path">
+                {lessonLab.workspace}/{lessonLab.targetPath}
+              </code>
+              <div class="starter-sheet__actions">
+                <a class="button button--primary" href="/downloads/dart_lab_starter.zip" download>
+                  Descargar laboratorio Dart
+                </a>
+                <a class="button" href="/inicio/">
+                  Ver preparación paso a paso
+                </a>
+              </div>
+            </section>
+          )
+        }
+
+        <section class="objective-sheet panel" aria-labelledby="objectives-title">
+          <p class="eyebrow">Objetivo verificable</p>
+          <h2 id="objectives-title">Al terminar podrás</h2>
+          <ul>
+            {lesson.data.objectives.map((objective) => <li>{objective}</li>)}
+          </ul>
+        </section>
+
+        <div class="prose">
+          <Content />
+        </div>
+
+        <section class="review-prompts" aria-labelledby="review-title">
+          <p class="eyebrow">Cuatro recuperaciones</p>
+          <h2 id="review-title">Preguntas para volver sin mirar</h2>
+          <ol>
+            {lesson.data.reviewPrompts.map((prompt) => <li>{prompt}</li>)}
+          </ol>
+        </section>
+
+        {
+          lessonLab ? (
+            <LessonPractice
+              lessonId={lesson.data.id}
+              activities={lesson.data.activities}
+              lab={lessonLab}
+              reference={canonicalReference}
+            />
+          ) : (
+            <LessonPractice lessonId={lesson.data.id} activities={lesson.data.activities} />
+          )
+        }
+      </article>
+
+      <aside class="lesson-aside" aria-label="Navegación y fuentes de la lección">
+        {
+          sectionHeadings.length > 0 && (
+            <nav class="contents" aria-labelledby="contents-title">
+              <p class="eyebrow" id="contents-title">
+                En esta lección
+              </p>
+              <ol>
+                {sectionHeadings.map((heading) => (
+                  <li>
+                    <a href={`#${heading.slug}`}>{heading.text}</a>
+                  </li>
+                ))}
+              </ol>
+            </nav>
+          )
+        }
+
+        <section class="source-sheet" aria-labelledby="sources-title">
+          <p class="eyebrow">Fuente oficial</p>
+          <h2 id="sources-title">Lee con una pregunta</h2>
+          <ul>
+            {
+              lesson.data.docRefs.map((source) => (
+                <li>
+                  <a href={source.url} target="_blank" rel="noreferrer">
+                    {source.label}
+                    <span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+                  </a>
+                  <small>
+                    {source.version} · revisado{' '}
+                    {verifiedDate.format(new Date(`${source.lastVerified}T00:00:00Z`))}
+                  </small>
+                </li>
+              ))
+            }
+          </ul>
+          <a href="/documentacion/">Cómo leer documentación →</a>
+        </section>
+      </aside>
+    </div>
+
+    <nav class="lesson-pagination container" aria-label="Lecciones anterior y siguiente">
+      {
+        previousLesson ? (
+          <a href={lessonHref(previousLesson)}>← {previousLesson.data.title}</a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        nextLesson ? (
+          <a href={lessonHref(nextLesson)}>{nextLesson.data.title} →</a>
+        ) : (
+          <a href="/ruta/">Volver a la ruta →</a>
+        )
+      }
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding-block-start: var(--space-lg);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .lesson-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .lesson-head__meta {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .lesson-head__meta span {
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .lesson-head__meta span:first-child {
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .lesson-head h1 {
+    max-width: 15ch;
+  }
+
+  .lesson-head > p {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .lesson-layout,
+  .lesson-copy,
+  .lesson-aside,
+  .starter-sheet,
+  .objective-sheet,
+  .review-prompts,
+  .source-sheet {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .lesson-layout {
+    padding-block-end: var(--space-2xl);
+  }
+
+  .lesson-copy {
+    min-width: 0;
+  }
+
+  .objective-sheet {
+    gap: var(--space-md);
+    padding: var(--space-lg);
+  }
+
+  .starter-sheet {
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border-inline-start-width: 0.75rem;
+  }
+
+  .starter-sheet h2 {
+    margin-block: var(--space-xs);
+    font-size: var(--text-lg);
+  }
+
+  .starter-sheet__path {
+    width: fit-content;
+    max-width: 100%;
+    padding: var(--space-xs) var(--space-sm);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-code);
+    color: var(--color-code-ink);
+    overflow-wrap: anywhere;
+  }
+
+  .starter-sheet__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-sm);
+  }
+
+  .objective-sheet h2,
+  .source-sheet h2 {
+    font-size: var(--text-lg);
+  }
+
+  .objective-sheet ul,
+  .review-prompts ol,
+  .source-sheet ul,
+  .contents ol {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+    padding-inline-start: var(--space-lg);
+  }
+
+  .lesson-copy :global(.prose) {
+    max-width: var(--content-measure);
+  }
+
+  .review-prompts {
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .review-prompts li {
+    padding-inline-start: var(--space-xs);
+  }
+
+  .lesson-aside {
+    align-content: start;
+  }
+
+  .contents,
+  .source-sheet {
+    padding: var(--space-md);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .contents ol {
+    margin-block-start: var(--space-md);
+    font-size: var(--text-sm);
+  }
+
+  .source-sheet {
+    gap: var(--space-md);
+  }
+
+  .source-sheet li {
+    min-width: 0;
+  }
+
+  .source-sheet a {
+    font-weight: 700;
+    overflow-wrap: anywhere;
+  }
+
+  .source-sheet small {
+    display: block;
+    margin-block-start: var(--space-2xs);
+    color: var(--color-ink-muted);
+  }
+
+  .lesson-pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .lesson-pagination a {
+    max-width: 25rem;
+    font-weight: 700;
+  }
+
+  .lesson-pagination a:last-child {
+    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  @media (min-width: 64rem) {
+    .lesson-layout {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      align-items: start;
+    }
+
+    .lesson-aside {
+      position: sticky;
+      inset-block-start: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .lesson-pagination {
+      display: grid;
+    }
+
+    .lesson-pagination a:last-child {
+      margin-inline-start: 0;
+      text-align: start;
+    }
+  }
+</style>

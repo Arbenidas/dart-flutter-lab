@@ -1,0 +1,507 @@
+---
+import CommandBlock from './CommandBlock.astro';
+
+interface Activity {
+  id: string;
+  kind: string;
+  prompt: string;
+  required: boolean;
+  hints: string[];
+}
+
+interface Lab {
+  workspace: string;
+  targetPath: string;
+  testCommand: string;
+  analyzeCommand: string;
+  exerciseId?: string;
+}
+
+interface Props {
+  lessonId: string;
+  activities: Activity[];
+  lab?: Lab;
+  reference?:
+    | {
+        label: string;
+        code: string;
+        language: 'dart' | 'text';
+      }
+    | undefined;
+}
+
+const { lessonId, activities, lab, reference } = Astro.props;
+const labCommandLabel = lab?.testCommand.includes(' dart run ')
+  ? 'Ejecutar el programa'
+  : 'Pruebas del ejercicio';
+const kindLabels: Record<string, string> = {
+  predict: 'Predice',
+  practice: 'Escribe',
+  code: 'Escribe',
+  debug: 'Nombra',
+  docs: 'Sustenta',
+  explain: 'Argumenta',
+  reflect: 'Argumenta',
+  transfer: 'Reaplica',
+};
+---
+
+<section class="practice" data-lesson-practice data-lesson-id={lessonId}>
+  <header class="practice__head">
+    <div>
+      <p class="eyebrow">Cuaderno PENSAR</p>
+      <h2>Haz visible tu razonamiento</h2>
+    </div>
+    <span class="status-stamp" data-lesson-stamp>En progreso</span>
+  </header>
+
+  <p class="storage-warning" data-storage-warning hidden>
+    IndexedDB no respondió. Tus cambios viven solo durante esta sesión; expórtalos antes de cerrar.
+  </p>
+
+  <div class="activity-list">
+    {
+      activities.map((activity, index) => (
+        <article
+          class="activity"
+          data-activity={activity.id}
+          data-required={String(activity.required)}
+        >
+          <header class="activity__head">
+            <span class="activity__step" aria-hidden="true">
+              {String(index + 1).padStart(2, '0')}
+            </span>
+            <div>
+              <h3>{kindLabels[activity.kind] ?? activity.kind}</h3>
+              <p>{activity.prompt}</p>
+            </div>
+          </header>
+
+          {['predict', 'debug', 'docs', 'explain', 'reflect', 'transfer'].includes(
+            activity.kind,
+          ) && (
+            <div class="field">
+              <label for={`${lessonId}-${activity.id}`}>Escribe con tus palabras</label>
+              <textarea
+                id={`${lessonId}-${activity.id}`}
+                rows="4"
+                maxlength="5000"
+                data-activity-response={activity.id}
+                placeholder="Una hipótesis breve, un caso borde o una explicación…"
+              />
+              <span class="field__helper">Se guarda localmente al salir del campo.</span>
+            </div>
+          )}
+
+          {activity.hints.length > 0 && (
+            <div class="hint-stack" aria-label="Pistas socráticas">
+              {activity.hints.map((hint, hintIndex) => (
+                <details data-hint-id={`${activity.id}-h${hintIndex + 1}`}>
+                  <summary>Pista {hintIndex + 1}</summary>
+                  <p>{hint}</p>
+                </details>
+              ))}
+            </div>
+          )}
+
+          <label class="activity-check">
+            <input type="checkbox" data-activity-check={activity.id} />
+            <span>
+              {activity.required ? 'Hice esta evidencia' : 'También practiqué esta variante'}
+            </span>
+          </label>
+        </article>
+      ))
+    }
+  </div>
+
+  {
+    lab && (
+      <aside class="local-lab panel">
+        <div>
+          <p class="eyebrow">Práctica local · {lab.workspace}</p>
+          <h3>La web no ejecuta tu código</h3>
+          <p>
+            Abre <code>{lab.targetPath}</code>, trabaja en tu editor y vuelve con evidencia real.
+          </p>
+          {lab.workspace === 'dart_lab' && (
+            <p class="local-lab__help">
+              ¿No encuentras el archivo? Está incluido en el{' '}
+              <a href="/downloads/dart_lab_starter.zip" download>
+                laboratorio descargable
+              </a>
+              . También puedes seguir la <a href="/inicio/">preparación paso a paso</a>.
+            </p>
+          )}
+        </div>
+        <CommandBlock command={lab.testCommand} label={labCommandLabel} />
+        <CommandBlock command={lab.analyzeCommand} label="Análisis estático" />
+      </aside>
+    )
+  }
+
+  <div class="learner-note field">
+    <label for={`${lessonId}-note`}>Tu nota de la lección</label>
+    <textarea
+      id={`${lessonId}-note`}
+      rows="6"
+      maxlength="10000"
+      data-lesson-note
+      placeholder="Qué cambió en tu modelo mental, qué error viste y qué revisarás después."
+    ></textarea>
+    <span class="field__helper" data-save-status aria-live="polite"
+      >Solo se guarda en este navegador.</span
+    >
+  </div>
+
+  <section class="self-check panel">
+    <div>
+      <p class="eyebrow">Cierre honesto</p>
+      <h3>¿Puedes explicarlo sin mirar?</h3>
+      <p>
+        Marca las evidencias requeridas. La plataforma registra tu declaración; no afirma haber
+        ejecutado los tests.
+      </p>
+    </div>
+    <button class="button button--primary" type="button" data-confirm-lesson disabled
+      >Confirmar por mí</button
+    >
+    <p class="completion-help" data-completion-help>
+      Completa las evidencias requeridas para cerrar.
+    </p>
+  </section>
+
+  <details class="debrief" data-debrief hidden>
+    <summary>Debrief y referencia</summary>
+    <div>
+      <p>
+        Compara decisiones, no solo líneas. La referencia que sigue se carga desde la fuente
+        canónica del laboratorio durante el build; responde:
+      </p>
+      <ul>
+        <li>¿Qué supuesto hizo tu versión?</li>
+        <li>¿Qué caso borde cubre la referencia?</li>
+        <li>¿Qué conservarías de tu solución?</li>
+      </ul>
+      {
+        reference && (
+          <div class="canonical-reference">
+            <p>
+              <strong>Fuente canónica:</strong> <code>{reference.label}</code>
+            </p>
+            <pre>
+              <code class={`language-${reference.language}`}>{reference.code}</code>
+            </pre>
+          </div>
+        )
+      }
+    </div>
+  </details>
+
+  <noscript>
+    <p class="storage-warning">
+      La teoría y las pistas siguen disponibles. Activa JavaScript solo si quieres guardar progreso
+      y notas en este navegador.
+    </p>
+  </noscript>
+</section>
+
+<script>
+  import { SITE } from '../config';
+  import { createProgressRepository, deriveLessonStatus } from '../lib/progress';
+
+  document.querySelectorAll<HTMLElement>('[data-lesson-practice]').forEach(async (root) => {
+    const lessonId = root.dataset.lessonId;
+    if (!lessonId) return;
+    const repository = await createProgressRepository(SITE.contentVersion);
+    const warning = root.querySelector<HTMLElement>('[data-storage-warning]');
+    if (warning) warning.hidden = repository.mode !== 'memory';
+    await repository.markOpened(lessonId);
+
+    const restore = async () => {
+      const snapshot = await repository.getSnapshot();
+      const progress = snapshot.lessons.find((item) => item.lessonId === lessonId);
+      if (!progress) return;
+      root.querySelectorAll<HTMLInputElement>('[data-activity-check]').forEach((input) => {
+        input.checked = progress.completedActivityIds.includes(input.dataset.activityCheck ?? '');
+      });
+      root.querySelectorAll<HTMLTextAreaElement>('[data-activity-response]').forEach((input) => {
+        if (document.activeElement !== input)
+          input.value = progress.responsesByActivityId[input.dataset.activityResponse ?? ''] ?? '';
+      });
+      const note = root.querySelector<HTMLTextAreaElement>('[data-lesson-note]');
+      if (note && document.activeElement !== note) note.value = progress.note;
+      root.querySelectorAll<HTMLDetailsElement>('[data-hint-id]').forEach((detail) => {
+        if (progress.revealedHintIds.includes(detail.dataset.hintId ?? ''))
+          detail.dataset.revealed = 'true';
+      });
+      const status = deriveLessonStatus(progress);
+      const stamp = root.querySelector<HTMLElement>('[data-lesson-stamp]');
+      if (stamp) {
+        stamp.dataset.state = status;
+        stamp.textContent =
+          status === 'retained'
+            ? 'Retenido'
+            : status === 'completed'
+              ? 'Confirmado por ti'
+              : 'En progreso';
+      }
+      const debrief = root.querySelector<HTMLElement>('[data-debrief]');
+      if (debrief) debrief.hidden = !progress.completedAtUtc;
+      updateCompletion();
+    };
+
+    root.querySelectorAll<HTMLInputElement>('[data-activity-check]').forEach((input) => {
+      input.addEventListener('change', async () => {
+        await repository.setActivityCompletion(
+          lessonId,
+          input.dataset.activityCheck ?? '',
+          input.checked,
+        );
+        updateCompletion();
+      });
+    });
+
+    root.querySelectorAll<HTMLTextAreaElement>('[data-activity-response]').forEach((input) => {
+      input.addEventListener(
+        'blur',
+        () =>
+          void repository.setResponse(lessonId, input.dataset.activityResponse ?? '', input.value),
+      );
+    });
+
+    root.querySelectorAll<HTMLDetailsElement>('[data-hint-id]').forEach((detail) => {
+      detail.addEventListener('toggle', () => {
+        if (detail.open) void repository.revealHint(lessonId, detail.dataset.hintId ?? '');
+      });
+    });
+
+    const note = root.querySelector<HTMLTextAreaElement>('[data-lesson-note]');
+    const saveStatus = root.querySelector<HTMLElement>('[data-save-status]');
+    let noteTimer = 0;
+    note?.addEventListener('input', () => {
+      window.clearTimeout(noteTimer);
+      if (saveStatus) saveStatus.textContent = 'Cambios pendientes…';
+      noteTimer = window.setTimeout(async () => {
+        try {
+          await repository.setNote(lessonId, note.value);
+          if (saveStatus) saveStatus.textContent = 'Nota guardada en este navegador.';
+        } catch {
+          if (saveStatus)
+            saveStatus.textContent =
+              'La nota no se guardó. Reduce su longitud y vuelve a intentarlo.';
+        }
+      }, 350);
+    });
+
+    const confirm = root.querySelector<HTMLButtonElement>('[data-confirm-lesson]');
+    const help = root.querySelector<HTMLElement>('[data-completion-help]');
+    function updateCompletion() {
+      const required = [
+        ...root.querySelectorAll<HTMLElement>('[data-required="true"] input[data-activity-check]'),
+      ];
+      const ready =
+        required.length > 0 && required.every((input) => (input as HTMLInputElement).checked);
+      if (confirm) confirm.disabled = !ready;
+      if (help)
+        help.textContent = ready
+          ? 'Tu declaración habilita el debrief y agenda el repaso de mañana.'
+          : 'Completa las evidencias requeridas para cerrar.';
+    }
+
+    confirm?.addEventListener('click', async () => {
+      confirm.dataset.state = 'loading';
+      confirm.textContent = 'Guardando…';
+      await repository.confirmLesson(lessonId);
+      confirm.dataset.state = 'success';
+      confirm.textContent = 'Confirmado por mí';
+      const stamp = root.querySelector<HTMLElement>('[data-lesson-stamp]');
+      if (stamp) stamp.dataset.animate = 'true';
+      await restore();
+    });
+
+    await restore();
+    repository.subscribe(() => void restore());
+  });
+</script>
+
+<style>
+  .practice {
+    display: grid;
+    gap: var(--space-xl);
+    margin-block-start: var(--space-2xl);
+    padding-block-start: var(--space-xl);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .practice__head,
+  .activity__head,
+  .self-check {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-lg);
+  }
+
+  .practice__head h2 {
+    margin-block-start: var(--space-xs);
+  }
+
+  .activity-list {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .activity {
+    display: grid;
+    gap: var(--space-lg);
+    padding-block-end: var(--space-xl);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .activity__head {
+    justify-content: flex-start;
+  }
+
+  .activity__head h3 {
+    margin-block-end: var(--space-xs);
+  }
+
+  .activity__step {
+    flex: 0 0 auto;
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .field {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .field label {
+    font-weight: 700;
+  }
+
+  textarea {
+    width: 100%;
+    min-height: 7rem;
+    resize: vertical;
+    padding: var(--space-sm);
+    border: var(--rule-strong) solid var(--color-ink);
+    outline: var(--rule-focus) solid transparent;
+    outline-offset: 0.1rem;
+    background: var(--color-paper-raised);
+  }
+
+  textarea:hover {
+    background: var(--color-paper);
+  }
+
+  textarea:focus-visible {
+    outline-color: var(--color-focus);
+  }
+
+  .field__helper {
+    min-height: 1lh;
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .hint-stack {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  details {
+    border: var(--rule-thin) solid var(--color-rule);
+    background: var(--color-paper-raised);
+  }
+
+  summary {
+    min-height: 3rem;
+    padding: var(--space-sm);
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  details p,
+  details div {
+    padding: 0 var(--space-sm) var(--space-sm);
+  }
+
+  .activity-check {
+    display: flex;
+    align-items: center;
+    gap: var(--space-sm);
+    min-height: 3rem;
+    width: fit-content;
+    font-weight: 700;
+  }
+
+  .activity-check input {
+    width: 1.4rem;
+    height: 1.4rem;
+    accent-color: var(--color-success);
+  }
+
+  .local-lab {
+    display: grid;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+
+  .local-lab h3,
+  .self-check h3 {
+    margin-block: var(--space-xs);
+  }
+
+  .local-lab__help {
+    margin-block-start: var(--space-sm);
+  }
+
+  .self-check {
+    display: grid;
+    padding: var(--space-lg);
+  }
+
+  .completion-help,
+  .storage-warning {
+    color: var(--color-ink-muted);
+  }
+
+  .storage-warning {
+    padding: var(--space-sm);
+    border: var(--rule-strong) dashed var(--color-warning);
+  }
+
+  .debrief[hidden] {
+    display: none;
+  }
+
+  .debrief ul {
+    margin: 0;
+  }
+
+  .canonical-reference {
+    display: grid;
+    gap: var(--space-sm);
+    margin-block-start: var(--space-lg);
+  }
+
+  @media (min-width: 40rem) {
+    .self-check {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+    }
+
+    .self-check .completion-help {
+      grid-column: 1 / -1;
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .practice__head {
+      display: grid;
+    }
+  }
+</style>

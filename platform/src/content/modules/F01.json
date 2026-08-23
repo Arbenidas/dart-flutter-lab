@@ -1,0 +1,16 @@
+{
+  "id": "F01",
+  "trackId": "flutter",
+  "order": 1,
+  "slug": "f01-constraints-y-layout",
+  "title": "Constraints, layout y responsive",
+  "summary": "Construye interfaces que negocian espacio en lugar de depender de tamaños mágicos.",
+  "status": "available",
+  "estimatedHours": 9,
+  "prerequisites": ["F00"],
+  "outcomes": [
+    "Explicar el flujo constraints down, sizes up, parents set positions.",
+    "Adaptar una composición con LayoutBuilder sin duplicar pantallas."
+  ],
+  "lessonIds": ["F01-L01"]
+}

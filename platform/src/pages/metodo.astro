@@ -1,0 +1,317 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const steps = [
+  {
+    letter: 'P',
+    verb: 'Predice',
+    question: '¿Qué crees que ocurrirá y por qué?',
+    action: 'Deja una respuesta antes de ejecutar. Una predicción hace visible tu modelo mental.',
+  },
+  {
+    letter: 'E',
+    verb: 'Escribe',
+    question: '¿Cuál es el experimento mínimo?',
+    action: 'Cambia una sola variable, ejecuta en local y conserva la salida o el error.',
+  },
+  {
+    letter: 'N',
+    verb: 'Nombra',
+    question: '¿Dónde difieren tu idea y la evidencia?',
+    action: 'Describe la causa con vocabulario del lenguaje, no con “funciona” o “no funciona”.',
+  },
+  {
+    letter: 'S',
+    verb: 'Sustenta',
+    question: '¿Qué contrato oficial respalda la explicación?',
+    action: 'Busca una guía o referencia API y conecta una afirmación concreta con tu resultado.',
+  },
+  {
+    letter: 'A',
+    verb: 'Argumenta',
+    question: '¿Qué decisión tomarías y qué costo aceptas?',
+    action:
+      'Compara al menos dos opciones. La arquitectura empieza cuando puedes defender un límite.',
+  },
+  {
+    letter: 'R',
+    verb: 'Reaplica',
+    question: '¿Puedes usar la idea en un caso distinto?',
+    action: 'Resuelve una variación sin copiar el ejemplo y programa el próximo repaso.',
+  },
+] as const;
+---
+
+<BaseLayout
+  title="Método PENSAR"
+  description="Método socrático PENSAR para aprender programación con evidencia, documentación y transferencia."
+>
+  <div data-pagefind-body>
+    <header class="page-head container">
+      <p class="eyebrow">Método PENSAR</p>
+      <h1>La respuesta llega después del razonamiento.</h1>
+      <p>
+        Seis movimientos convierten una explicación en una habilidad: predice, escribe, nombra,
+        sustenta, argumenta y reaplica.
+      </p>
+    </header>
+
+    <section class="method-sequence container" aria-labelledby="sequence-title">
+      <header>
+        <p class="eyebrow">Un ciclo, no seis casillas</p>
+        <h2 id="sequence-title">Cada paso produce evidencia para el siguiente</h2>
+      </header>
+      <ol>
+        {
+          steps.map((step, index) => (
+            <li>
+              <div class="method-letter" aria-hidden="true">
+                {step.letter}
+              </div>
+              <div class="method-copy">
+                <span>{String(index + 1).padStart(2, '0')}</span>
+                <h3>{step.verb}</h3>
+                <p class="method-question">{step.question}</p>
+                <p>{step.action}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <div class="method-notes container">
+      <section class="hint-ladder" aria-labelledby="hints-title">
+        <p class="eyebrow">Pistas socráticas</p>
+        <h2 id="hints-title">Ayuda que no reemplaza el intento</h2>
+        <ol>
+          <li>
+            <strong>Primera pista:</strong> vuelve tu atención hacia una condición o palabra clave.
+          </li>
+          <li>
+            <strong>Segunda pista:</strong> reduce el espacio de posibilidades sin escribir la solución.
+          </li>
+          <li>
+            <strong>Tercera pista:</strong> propone un siguiente experimento, no una respuesta para copiar.
+          </li>
+        </ol>
+        <p>
+          Trabaja hasta 20 minutos con una hipótesis clara. Si sigues detenido, abre una pista y
+          registra qué dato te faltaba.
+        </p>
+      </section>
+
+      <aside class="ai-rule" aria-labelledby="ai-rule-title">
+        <p class="eyebrow">IA con fricción útil</p>
+        <h2 id="ai-rule-title">Pregunta después de producir evidencia</h2>
+        <p>
+          Comparte tu predicción, el ejemplo mínimo, la salida exacta y la fuente que ya
+          consultaste. Pide una pregunta de diagnóstico o un contraejemplo antes que código
+          terminado.
+        </p>
+      </aside>
+    </div>
+
+    <section class="session container" aria-labelledby="session-title">
+      <div>
+        <p class="eyebrow">Sesión de 60 minutos</p>
+        <h2 id="session-title">Menos contenido, más recuperación</h2>
+      </div>
+      <dl>
+        <div><dt>20 min</dt><dd>Repasa de memoria y corrige una explicación anterior.</dd></div>
+        <div><dt>30 min</dt><dd>Trabaja una idea nueva con el ciclo PENSAR completo.</dd></div>
+        <div>
+          <dt>10 min</dt><dd>Escribe una nota propia y prepara el siguiente punto de entrada.</dd>
+        </div>
+      </dl>
+      <a class="button button--primary" href="/inicio/">Preparar el laboratorio</a>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head,
+  .method-sequence,
+  .hint-ladder,
+  .ai-rule,
+  .session {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .page-head {
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 14ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 62ch;
+    font-size: var(--text-md);
+  }
+
+  .method-sequence {
+    padding-block: var(--space-xl) var(--space-2xl);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .method-sequence > header {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .method-sequence ol {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .method-sequence li {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-lg);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .method-letter {
+    display: grid;
+    width: 3.25rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+    font-family: var(--font-display);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    box-shadow: var(--shadow-pressed);
+  }
+
+  .method-copy {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .method-copy > span {
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .method-question {
+    font-weight: 700;
+  }
+
+  .method-copy p:last-child {
+    max-width: 62ch;
+    color: var(--color-ink-muted);
+  }
+
+  .method-notes {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-block: var(--space-2xl);
+  }
+
+  .hint-ladder ol {
+    display: grid;
+    gap: var(--space-md);
+    margin: 0;
+    padding-inline-start: var(--space-lg);
+  }
+
+  .hint-ladder > p:last-child {
+    max-width: 62ch;
+    padding-inline-start: var(--space-md);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .ai-rule {
+    align-content: start;
+    padding: var(--space-lg);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .session {
+    margin-block-end: var(--space-3xl);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .session > div {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .session dl {
+    display: grid;
+    margin: 0;
+    border-block-start: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .session dl div {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-sm);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .session dt {
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .session dd {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .session .button {
+    justify-self: start;
+  }
+
+  @media (min-width: 52rem) {
+    .method-sequence li {
+      grid-template-columns: 4rem 8rem minmax(0, 1fr);
+      align-items: start;
+    }
+
+    .method-copy {
+      display: grid;
+      grid-column: 2 / -1;
+      grid-template-columns: 8rem minmax(0, 1fr);
+    }
+
+    .method-copy > span {
+      grid-column: 1;
+    }
+
+    .method-copy h3 {
+      grid-column: 1;
+    }
+
+    .method-copy p {
+      grid-column: 2;
+    }
+
+    .method-question {
+      grid-row: 1 / 3;
+    }
+
+    .method-notes {
+      grid-template-columns: minmax(0, 1.2fr) minmax(17rem, 0.8fr);
+      align-items: start;
+    }
+
+    .ai-rule {
+      transform: rotate(0.3deg);
+    }
+  }
+</style>

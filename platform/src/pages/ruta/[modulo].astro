@@ -1,0 +1,413 @@
+---
+import { getCatalog, lessonHref, moduleHref } from '../../lib/catalog';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+interface Props {
+  moduleId: string;
+}
+
+export async function getStaticPaths() {
+  const catalog = await getCatalog();
+  return catalog.modules.map((module) => ({
+    params: { modulo: module.data.slug },
+    props: { moduleId: module.data.id },
+  }));
+}
+
+const { moduleId } = Astro.props as Props;
+const catalog = await getCatalog();
+const module = catalog.modules.find((entry) => entry.data.id === moduleId);
+
+if (!module) {
+  throw new Error(`No se encontró el módulo ${moduleId}.`);
+}
+
+const track = catalog.tracks.find((entry) => entry.data.id === module.data.trackId);
+const lessons = catalog.lessons.filter((entry) => entry.data.moduleId === module.data.id);
+const prerequisites = module.data.prerequisites
+  .map((id) => catalog.modules.find((entry) => entry.data.id === id))
+  .filter((entry) => entry !== undefined);
+const trackModules = catalog.modules.filter((entry) => entry.data.trackId === module.data.trackId);
+const currentIndex = trackModules.findIndex((entry) => entry.data.id === module.data.id);
+const previousModule = currentIndex > 0 ? trackModules[currentIndex - 1] : undefined;
+const nextModule = currentIndex >= 0 ? trackModules[currentIndex + 1] : undefined;
+const nearestAvailable = [...trackModules]
+  .filter((entry) => entry.data.status === 'available' && entry.data.order < module.data.order)
+  .sort((left, right) => right.data.order - left.data.order)[0];
+const statusLabel =
+  module.data.status === 'available'
+    ? 'Disponible'
+    : module.data.status === 'preview'
+      ? 'Vista previa'
+      : 'Roadmap';
+---
+
+<BaseLayout title={`${module.data.id} · ${module.data.title}`} description={module.data.summary}>
+  <div data-pagefind-body data-pagefind-filter="route:module">
+    <nav class="breadcrumb container" aria-label="Migas de pan">
+      <a href="/ruta/">Ruta</a>
+      <span aria-hidden="true">/</span>
+      <span>{track?.data.title ?? module.data.trackId}</span>
+      <span aria-hidden="true">/</span>
+      <span aria-current="page">{module.data.id}</span>
+    </nav>
+
+    <header class="module-head container" data-pagefind-filter={`track:${module.data.trackId}`}>
+      <div class="module-head__identity">
+        <span class="module-code" data-pagefind-filter={`module:${module.data.id}`}
+          >{module.data.id}</span
+        >
+        <span class:list={['module-status', `is-${module.data.status}`]}>{statusLabel}</span>
+      </div>
+      <h1>{module.data.title}</h1>
+      <p>{module.data.summary}</p>
+      <dl class="module-facts">
+        <div><dt>Ruta</dt><dd>{track?.data.title ?? module.data.trackId}</dd></div>
+        <div><dt>Trabajo estimado</dt><dd>{module.data.estimatedHours} h</dd></div>
+        <div><dt>Lecciones publicadas</dt><dd>{lessons.length}</dd></div>
+      </dl>
+    </header>
+
+    <div class="module-layout container">
+      <div class="module-main" aria-labelledby="module-outcomes">
+        <section class="outcome-sheet panel">
+          <p class="eyebrow">Al cerrar el módulo</p>
+          <h2 id="module-outcomes">Evidencia que podrás producir</h2>
+          <ul>
+            {module.data.outcomes.map((outcome) => <li>{outcome}</li>)}
+          </ul>
+        </section>
+
+        {
+          lessons.length > 0 ? (
+            <section class="lesson-section" aria-labelledby="lesson-title">
+              <header>
+                <p class="eyebrow">Secuencia publicada</p>
+                <h2 id="lesson-title">Lecciones para trabajar en orden</h2>
+              </header>
+              <ol class="lesson-list">
+                {lessons.map((lesson, index) => (
+                  <li>
+                    <a href={lessonHref(lesson)}>
+                      <span class="lesson-number">{String(index + 1).padStart(2, '0')}</span>
+                      <span>
+                        <strong>{lesson.data.title}</strong>
+                        <small>{lesson.data.summary}</small>
+                      </span>
+                      <span class="lesson-time">{lesson.data.estimatedMinutes} min</span>
+                    </a>
+                  </li>
+                ))}
+              </ol>
+            </section>
+          ) : (
+            <section class="roadmap-note" aria-labelledby="roadmap-title">
+              <p class="eyebrow">Contenido en roadmap</p>
+              <h2 id="roadmap-title">El destino está definido; las lecciones todavía no.</h2>
+              <p>
+                Esta ficha hace visible qué aprenderás y de qué depende, sin presentar un módulo
+                vacío como si ya estuviera terminado.
+              </p>
+              <a
+                class="button button--primary"
+                href={nearestAvailable ? moduleHref(nearestAvailable) : '/ruta/'}
+              >
+                {nearestAvailable ? `Practicar ${nearestAvailable.data.id}` : 'Volver a la ruta'}
+              </a>
+            </section>
+          )
+        }
+      </div>
+
+      <aside class="module-aside" aria-label="Dependencias del módulo">
+        <section>
+          <p class="eyebrow">Antes de entrar</p>
+          <h2>Prerrequisitos</h2>
+          {
+            prerequisites.length > 0 ? (
+              <ul>
+                {prerequisites.map((entry) => (
+                  <li>
+                    <a href={moduleHref(entry)}>
+                      {entry.data.id} · {entry.data.title}
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p>Este módulo abre la ruta. No presupone experiencia previa.</p>
+            )
+          }
+        </section>
+        <section class="local-rule">
+          <p class="eyebrow">Regla del laboratorio</p>
+          <p>
+            La plataforma orienta. Los comandos, tests y el analizador corren en tu computadora.
+          </p>
+        </section>
+      </aside>
+    </div>
+
+    <nav class="module-pagination container" aria-label="Módulos anterior y siguiente">
+      {
+        previousModule ? (
+          <a href={moduleHref(previousModule)}>
+            ← {previousModule.data.id} · {previousModule.data.title}
+          </a>
+        ) : (
+          <span />
+        )
+      }
+      {
+        nextModule ? (
+          <a href={moduleHref(nextModule)}>
+            {nextModule.data.id} · {nextModule.data.title} →
+          </a>
+        ) : (
+          <a href="/ruta/">Ver ruta completa →</a>
+        )
+      }
+    </nav>
+  </div>
+</BaseLayout>
+
+<style>
+  .breadcrumb {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-xs);
+    padding-block-start: var(--space-lg);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .module-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-xl) var(--space-2xl);
+  }
+
+  .module-head__identity {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .module-code,
+  .module-status,
+  .lesson-number,
+  .lesson-time {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .module-code,
+  .module-status {
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-code,
+  .module-status.is-available {
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .module-status.is-roadmap {
+    border-style: dashed;
+    color: var(--color-ink-muted);
+  }
+
+  .module-head h1 {
+    max-width: 14ch;
+  }
+
+  .module-head > p {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .module-facts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    max-width: 48rem;
+    margin-block-start: var(--space-md);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-facts div {
+    min-width: 0;
+    padding: var(--space-sm);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+    border-inline-end: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-facts dt {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  .module-facts dd {
+    margin: 0;
+    font-weight: 700;
+  }
+
+  .module-layout,
+  .module-main,
+  .module-aside,
+  .lesson-section,
+  .roadmap-note {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .module-layout {
+    padding-block-end: var(--space-2xl);
+  }
+
+  .outcome-sheet {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+  }
+
+  .outcome-sheet ul,
+  .module-aside ul {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+    padding-inline-start: var(--space-lg);
+  }
+
+  .lesson-section > header {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .lesson-list {
+    margin: 0;
+    padding: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    list-style: none;
+  }
+
+  .lesson-list a {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+    text-decoration: none;
+  }
+
+  .lesson-list strong,
+  .lesson-list small {
+    display: block;
+  }
+
+  .lesson-list small {
+    margin-block-start: var(--space-2xs);
+    color: var(--color-ink-muted);
+  }
+
+  .lesson-time {
+    grid-column: 2;
+    color: var(--color-ink-muted);
+  }
+
+  .roadmap-note {
+    padding: var(--space-xl);
+    border: var(--rule-strong) dashed var(--color-ink);
+  }
+
+  .roadmap-note p:not(.eyebrow) {
+    max-width: 60ch;
+  }
+
+  .roadmap-note .button {
+    justify-self: start;
+  }
+
+  .module-aside {
+    align-content: start;
+    padding-block-start: var(--space-lg);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-aside section {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .module-aside h2 {
+    font-size: var(--text-lg);
+  }
+
+  .local-rule {
+    padding: var(--space-md);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .module-pagination {
+    display: flex;
+    justify-content: space-between;
+    gap: var(--space-lg);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-pagination a {
+    max-width: 26rem;
+    font-weight: 700;
+  }
+
+  .module-pagination a:last-child {
+    margin-inline-start: auto;
+    text-align: end;
+  }
+
+  @media (min-width: 40rem) {
+    .module-facts {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    .lesson-list a {
+      grid-template-columns: 3rem minmax(0, 1fr) 6rem;
+      align-items: start;
+    }
+
+    .lesson-time {
+      grid-column: 3;
+      justify-self: end;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .module-layout {
+      grid-template-columns: minmax(0, 1fr) 19rem;
+      align-items: start;
+    }
+
+    .module-aside {
+      position: sticky;
+      inset-block-start: var(--space-lg);
+    }
+  }
+
+  @media (max-width: 39.999rem) {
+    .module-pagination {
+      display: grid;
+    }
+
+    .module-pagination a:last-child {
+      margin-inline-start: 0;
+      text-align: start;
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+{
+  "id": "D13",
+  "trackId": "dart",
+  "order": 13,
+  "slug": "d13-paquetes-y-documentacion",
+  "title": "Paquetes, bibliotecas y documentación",
+  "summary": "Organiza código reusable, domina pub y aprende a evaluar APIs oficiales.",
+  "status": "available",
+  "estimatedHours": 7,
+  "prerequisites": ["D12"],
+  "outcomes": [
+    "Gestionar dependencias con restricciones de versión conscientes.",
+    "Publicar documentación que explique contratos y no repita la implementación."
+  ],
+  "lessonIds": ["D13-L01"]
+}

@@ -1,0 +1,213 @@
+---
+import CommandBlock from '../components/CommandBlock.astro';
+import { getCatalog, lessonHref } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+const firstLesson = catalog.lessons[0];
+---
+
+<BaseLayout
+  title="Preparar el laboratorio"
+  description="Instala el SDK y ejecuta tu primera práctica local de Dart."
+>
+  <header class="page-head container">
+    <p class="eyebrow">Primera sesión · 15–25 min</p>
+    <h1>Prepara un lugar donde equivocarte.</h1>
+    <p>
+      La plataforma orienta. Tu computadora compila, analiza y prueba. No necesitas una cuenta ni un
+      editor dentro del navegador.
+    </p>
+  </header>
+
+  <div class="setup-layout container">
+    <ol class="setup-steps">
+      <li class="setup-step panel">
+        <span class="setup-step__number">1</span>
+        <div>
+          <h2>Instala Flutter 3.47.1</h2>
+          <p>
+            Primero instala FVM. Después úsalo para obtener un único SDK de Dart y Flutter; así una
+            actualización global no cambia el laboratorio a mitad de la ruta.
+          </p>
+          <CommandBlock command="fvm install 3.47.1" label="Instalar la versión fijada" />
+          <a href="https://fvm.app/" target="_blank" rel="noreferrer"
+            >Abrir instalación oficial de FVM <span class="visually-hidden"
+              >(se abre en una pestaña nueva)</span
+            ></a
+          >
+          <a href="https://docs.flutter.dev/get-started/install" target="_blank" rel="noreferrer"
+            >Abrir instalación oficial de Flutter <span class="visually-hidden"
+              >(se abre en una pestaña nueva)</span
+            ></a
+          >
+        </div>
+      </li>
+      <li class="setup-step panel">
+        <span class="setup-step__number">2</span>
+        <div>
+          <h2>Descarga el starter</h2>
+          <p>
+            El ZIP contiene ejercicios y tests, pero excluye las soluciones. Descomprímelo en una
+            carpeta que puedas encontrar desde la terminal.
+          </p>
+          <a class="button button--primary" href="/downloads/dart_lab_starter.zip" download
+            >Descargar laboratorio Dart</a
+          >
+        </div>
+      </li>
+      <li class="setup-step panel">
+        <span class="setup-step__number">3</span>
+        <div>
+          <h2>Resuelve dependencias</h2>
+          <p>
+            Abre la carpeta descomprimida en VS Code y crea una terminal integrada. Desde la raíz,
+            comprueba el SDK antes de entrar al paquete.
+          </p>
+          <CommandBlock command="./tool/preflight.sh" label="Verificar FVM y el SDK" />
+          <CommandBlock command="cd dart_lab" label="Entrar al paquete" />
+          <CommandBlock
+            command="fvm dart pub get --enforce-lockfile"
+            label="Descargar las versiones bloqueadas"
+          />
+          <a href="https://docs.flutter.dev/tools/vs-code" target="_blank" rel="noreferrer"
+            >Configurar VS Code con la guía oficial <span class="visually-hidden"
+              >(se abre en una pestaña nueva)</span
+            ></a
+          >
+        </div>
+      </li>
+      <li class="setup-step panel">
+        <span class="setup-step__number">4</span>
+        <div>
+          <h2>Comprueba el primer archivo</h2>
+          <p>
+            El archivo ya viene dentro del ZIP en <code>dart_lab/bin/m01_hola.dart</code>. Como tu
+            terminal quedó dentro de <code>dart_lab</code>, ejecuta la ruta empezando en
+            <code>bin</code>.
+          </p>
+          <CommandBlock
+            command="fvm dart run bin/m01_hola.dart"
+            label="Ejecutar el primer programa"
+          />
+          <CommandBlock command="fvm dart analyze" label="Consultar al analizador" />
+          <p>
+            Todavía no uses <code>./lab next</code>: ese comando comienza los contratos de D01. La
+            primera lección te enseñará antes a leer y modificar este programa mínimo.
+          </p>
+        </div>
+      </li>
+    </ol>
+
+    <aside class="contract panel">
+      <p class="eyebrow">Contrato de aprendizaje</p>
+      <h2>La IA entra después.</h2>
+      <ul>
+        <li>Predice antes de ejecutar.</li>
+        <li>Pelea 20 minutos antes de buscar.</li>
+        <li>Abre documentación oficial primero.</li>
+        <li>Explica antes de ver la referencia.</li>
+      </ul>
+      <a class="button button--primary" href={firstLesson ? lessonHref(firstLesson) : '/ruta/'}
+        >Empezar la primera lección</a
+      >
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 13ch;
+  }
+
+  .page-head > p:last-child {
+    max-width: 55ch;
+    font-size: var(--text-md);
+  }
+
+  .setup-layout {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-2xl);
+    padding-block-end: var(--space-3xl);
+  }
+
+  .setup-steps {
+    display: grid;
+    gap: var(--space-xl);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .setup-step {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding: var(--space-lg);
+  }
+
+  .setup-step .button,
+  .contract .button {
+    white-space: normal;
+    text-align: center;
+  }
+
+  .setup-step__number {
+    font-family: var(--font-display);
+    font-size: var(--text-2xl);
+    line-height: 1;
+  }
+
+  .setup-step > div {
+    display: grid;
+    gap: var(--space-md);
+    min-width: 0;
+  }
+
+  .setup-step h2,
+  .contract h2 {
+    font-size: var(--text-xl);
+  }
+
+  .setup-step a:not(.button) {
+    justify-self: start;
+    font-weight: 700;
+  }
+
+  .contract {
+    display: grid;
+    align-content: start;
+    gap: var(--space-lg);
+    min-width: 0;
+    padding: var(--space-lg);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .contract ul {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+    padding-inline-start: var(--space-lg);
+  }
+
+  @media (min-width: 64rem) {
+    .setup-layout {
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      align-items: start;
+    }
+
+    .contract {
+      position: sticky;
+      inset-block-start: var(--space-lg);
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+{
+  "id": "D06",
+  "trackId": "dart",
+  "order": 6,
+  "slug": "d06-clases-y-objetos",
+  "title": "Clases, objetos e invariantes",
+  "summary": "Encapsula estado válido con constructores, métodos y objetos inmutables.",
+  "status": "available",
+  "estimatedHours": 7,
+  "prerequisites": ["D05"],
+  "outcomes": [
+    "Diseñar clases pequeñas con responsabilidades claras.",
+    "Proteger invariantes desde la construcción del objeto."
+  ],
+  "lessonIds": ["D06-L01"]
+}

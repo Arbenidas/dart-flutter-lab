@@ -1,0 +1,303 @@
+---
+import ProgressSummary from '../components/ProgressSummary.astro';
+import { getCatalog, lessonClientCatalog, lessonHref, moduleHref } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+const availableLessons = catalog.lessons;
+const availableModules = catalog.modules.filter((module) => module.data.status === 'available');
+const firstLesson = availableLessons[0];
+---
+
+<BaseLayout>
+  <section class="hero container">
+    <div class="hero__copy">
+      <p class="hero__route">Dart → Flutter → proyectos mantenibles</p>
+      <h1>Aprende sin delegar el pensamiento.</h1>
+      <p class="hero__lede">
+        Una ruta en español para empezar desde cero, escribir código local, leer la fuente oficial y
+        explicar por qué una solución funciona.
+      </p>
+      <div class="hero__actions">
+        <a class="button button--primary" href="/inicio/">Preparar el laboratorio</a>
+        <a class="hero__text-link" href={firstLesson ? lessonHref(firstLesson) : '/ruta/'}
+          >Ya lo preparé: abrir primera lección</a
+        >
+      </div>
+    </div>
+
+    <aside class="thinking-sheet" aria-labelledby="pensar-title">
+      <div class="thinking-sheet__head">
+        <span>HOJA / 001</span>
+        <span>NO COPIAR</span>
+      </div>
+      <h2 id="pensar-title">PENSAR</h2>
+      <ol>
+        <li><strong>P</strong><span>Predice</span><small>antes de ejecutar</small></li>
+        <li><strong>E</strong><span>Escribe</span><small>en tu laboratorio</small></li>
+        <li><strong>N</strong><span>Nombra</span><small>el supuesto que falló</small></li>
+        <li><strong>S</strong><span>Sustenta</span><small>con la fuente oficial</small></li>
+        <li><strong>A</strong><span>Argumenta</span><small>sin mirar</small></li>
+        <li><strong>R</strong><span>Reaplica</span><small>en otro problema</small></li>
+      </ol>
+    </aside>
+  </section>
+
+  <section class="dashboard-strip container">
+    <ProgressSummary lessons={lessonClientCatalog(availableLessons)} />
+  </section>
+
+  <section class="course-tour container" aria-labelledby="course-title">
+    <header>
+      <p class="eyebrow">La ruta disponible</p>
+      <h2 id="course-title">Primero criterio. Después arquitectura.</h2>
+      <p>
+        No empezamos con Clean Architecture ni una librería de estado. Primero construyes lenguaje,
+        depuración y pruebas; luego ves por qué las capas resuelven problemas reales.
+      </p>
+    </header>
+    <div class="course-tour__list">
+      {
+        availableModules.slice(0, 8).map((module, index) => (
+          <a class="module-row" href={moduleHref(module)}>
+            <span class="module-row__id">{module.data.id}</span>
+            <span>
+              <strong>{module.data.title}</strong>
+              <small>{module.data.summary}</small>
+            </span>
+            <span class="module-row__arrow" aria-hidden="true">
+              {index === 0 ? '▶' : '→'}
+            </span>
+          </a>
+        ))
+      }
+    </div>
+    <a class="button" href="/ruta/">Ver currículo y roadmap</a>
+  </section>
+
+  <section class="docs-proof container">
+    <div>
+      <p class="eyebrow">Docs Gym</p>
+      <h2>Google no es la documentación.</h2>
+    </div>
+    <div class="docs-proof__copy">
+      <p>
+        Aprenderás a llegar desde una duda hasta una guía, una firma de API o un changelog;
+        comprobar versión y plataforma; y construir un experimento mínimo antes de copiar un
+        ejemplo.
+      </p>
+      <a class="button button--primary" href="/documentacion/">Entrenar lectura oficial</a>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .hero {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+
+  .hero__copy {
+    align-self: center;
+    min-width: 0;
+  }
+
+  .hero__route {
+    width: fit-content;
+    margin-block-end: var(--space-md);
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .hero h1 {
+    max-width: 11ch;
+  }
+
+  .hero__lede {
+    max-width: 55ch;
+    margin-block-start: var(--space-lg);
+    font-size: var(--text-md);
+  }
+
+  .hero__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-lg);
+    margin-block-start: var(--space-xl);
+  }
+
+  .hero__text-link {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  .thinking-sheet {
+    align-self: start;
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+    box-shadow: 0.5rem 0.5rem 0 var(--color-shadow);
+    transform: rotate(0.4deg);
+  }
+
+  .thinking-sheet__head {
+    display: flex;
+    justify-content: space-between;
+    padding: var(--space-xs) var(--space-sm);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .thinking-sheet h2 {
+    padding: var(--space-md);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+    font-size: clamp(var(--text-2xl), 7.5vw, 5rem);
+    letter-spacing: -0.06em;
+    white-space: nowrap;
+  }
+
+  .thinking-sheet ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .thinking-sheet li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    padding: var(--space-sm);
+    border-block-start: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .thinking-sheet li strong {
+    grid-row: 1 / 3;
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+
+  .thinking-sheet li span {
+    font-weight: 700;
+  }
+
+  .thinking-sheet li small {
+    color: var(--color-ink-muted);
+  }
+
+  .dashboard-strip {
+    padding-block-end: var(--space-3xl);
+  }
+
+  .course-tour {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl) var(--space-3xl);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .course-tour > header {
+    display: grid;
+    gap: var(--space-md);
+    max-width: 55rem;
+  }
+
+  .course-tour > header p:last-child {
+    max-width: 60ch;
+    font-size: var(--text-md);
+  }
+
+  .course-tour__list {
+    display: grid;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .module-row {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr) auto;
+    align-items: start;
+    gap: var(--space-md);
+    min-width: 0;
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+    text-decoration: none;
+  }
+
+  .module-row__id,
+  .module-row__arrow {
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  .module-row strong,
+  .module-row small {
+    display: block;
+  }
+
+  .module-row small {
+    margin-block-start: var(--space-2xs);
+    color: var(--color-ink-muted);
+  }
+
+  .course-tour > .button {
+    justify-self: start;
+  }
+
+  .docs-proof {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-2xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .docs-proof__copy {
+    display: grid;
+    align-content: start;
+    justify-items: start;
+    gap: var(--space-lg);
+    max-width: 55ch;
+  }
+
+  @media (min-width: 48rem) {
+    .hero {
+      grid-template-columns: minmax(0, 1.12fr) minmax(20rem, 0.88fr);
+      align-items: center;
+      gap: var(--space-xl);
+    }
+
+    .hero h1 {
+      font-size: 3.1rem;
+    }
+
+    .course-tour {
+      grid-template-columns: minmax(18rem, 0.7fr) minmax(0, 1.3fr);
+      align-items: start;
+    }
+
+    .course-tour > .button {
+      grid-column: 2;
+    }
+
+    .docs-proof {
+      grid-template-columns: minmax(0, 1.2fr) minmax(18rem, 0.8fr);
+      align-items: start;
+    }
+  }
+
+  @media (min-width: 64rem) {
+    .hero {
+      gap: var(--space-2xl);
+    }
+
+    .hero h1 {
+      max-width: 12ch;
+      font-size: clamp(3.1rem, 5.2vw, 4.75rem);
+    }
+  }
+</style>

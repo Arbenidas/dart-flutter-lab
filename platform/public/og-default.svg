@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630">
+  <rect width="1200" height="630" fill="#F2EBDD"/>
+  <path d="M0 110h1200M0 520h1200" stroke="#151515" stroke-width="4"/>
+  <rect x="74" y="72" width="92" height="486" fill="#B7F43C" stroke="#151515" stroke-width="4"/>
+  <text x="220" y="280" font-family="Arial Black, sans-serif" font-size="96" fill="#151515">DART &amp;</text>
+  <text x="220" y="390" font-family="Arial Black, sans-serif" font-size="96" fill="#151515">FLUTTER LAB</text>
+  <text x="224" y="458" font-family="monospace" font-size="30" fill="#625D53">aprende · prueba · explica · reaplica</text>
+</svg>

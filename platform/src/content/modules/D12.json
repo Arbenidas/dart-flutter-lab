@@ -1,0 +1,16 @@
+{
+  "id": "D12",
+  "trackId": "dart",
+  "order": 12,
+  "slug": "d12-io-json-http-y-cli",
+  "title": "Archivos, JSON, HTTP y CLI",
+  "summary": "Conecta programas Dart con archivos, procesos, argumentos y servicios web.",
+  "status": "available",
+  "estimatedHours": 10,
+  "prerequisites": ["D11"],
+  "outcomes": [
+    "Validar datos externos antes de convertirlos al dominio.",
+    "Construir una herramienta CLI con entradas, salidas y códigos de error claros."
+  ],
+  "lessonIds": ["D12-L01"]
+}

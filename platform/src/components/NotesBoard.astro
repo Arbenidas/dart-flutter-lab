@@ -1,0 +1,189 @@
+---
+interface LessonItem {
+  id: string;
+  title: string;
+  href: string;
+  moduleId: string;
+}
+
+interface Props {
+  lessons: LessonItem[];
+}
+
+const { lessons } = Astro.props;
+---
+
+<section class="notes-board" data-notes-board data-lessons={JSON.stringify(lessons)}>
+  <div class="notes-tools">
+    <label for="notes-search">Filtrar tus notas</label>
+    <input
+      id="notes-search"
+      type="search"
+      placeholder="Concepto o palabra propia"
+      data-notes-search
+    />
+    <p data-notes-status aria-live="polite">Cargando notas locales…</p>
+  </div>
+  <div class="notes-list" data-notes-list></div>
+</section>
+
+<script>
+  import { SITE } from '../config';
+  import { createProgressRepository } from '../lib/progress';
+
+  document.querySelectorAll<HTMLElement>('[data-notes-board]').forEach(async (root) => {
+    const lessons = JSON.parse(root.dataset.lessons ?? '[]') as Array<{
+      id: string;
+      title: string;
+      href: string;
+      moduleId: string;
+    }>;
+    const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
+    const repository = await createProgressRepository(SITE.contentVersion);
+    const list = root.querySelector<HTMLElement>('[data-notes-list]');
+    const status = root.querySelector<HTMLElement>('[data-notes-status]');
+    const search = root.querySelector<HTMLInputElement>('[data-notes-search]');
+
+    const render = async () => {
+      if (!list || !status) return;
+      const query = search?.value.trim().toLocaleLowerCase('es') ?? '';
+      const snapshot = await repository.getSnapshot();
+      const notes = snapshot.lessons
+        .filter((item) => item.note.trim())
+        .filter((item) => {
+          const lesson = byId.get(item.lessonId);
+          return `${lesson?.title ?? ''} ${item.note}`.toLocaleLowerCase('es').includes(query);
+        })
+        .sort((a, b) => (b.noteUpdatedAtUtc ?? '').localeCompare(a.noteUpdatedAtUtc ?? ''));
+      status.textContent = `${notes.length} ${notes.length === 1 ? 'nota visible' : 'notas visibles'}.`;
+      if (!notes.length) {
+        const empty = document.createElement('article');
+        empty.className = 'notes-empty panel';
+        const title = document.createElement('h2');
+        title.textContent = query ? 'Ninguna nota coincide' : 'Tu cuaderno está vacío';
+        const copy = document.createElement('p');
+        copy.textContent = query
+          ? 'Prueba una palabra que hayas escrito tú.'
+          : 'Las notas aparecen cuando escribes dentro de una lección.';
+        empty.append(title, copy);
+        list.replaceChildren(empty);
+        return;
+      }
+      list.replaceChildren(
+        ...notes.map((note) => {
+          const lesson = byId.get(note.lessonId);
+          const article = document.createElement('article');
+          article.className = 'note-sheet';
+          const head = document.createElement('div');
+          head.className = 'note-sheet__head';
+          const title = document.createElement('h2');
+          title.textContent = lesson?.title ?? note.lessonId;
+          const module = document.createElement('span');
+          module.textContent = lesson?.moduleId ?? '';
+          head.append(title, module);
+          const copy = document.createElement('p');
+          copy.textContent = note.note;
+          const link = document.createElement('a');
+          link.href = lesson?.href ?? '/ruta/';
+          link.textContent = 'Volver a la lección';
+          article.append(head, copy, link);
+          return article;
+        }),
+      );
+    };
+    search?.addEventListener('input', () => void render());
+    await render();
+    repository.subscribe(() => void render());
+  });
+</script>
+
+<style>
+  .notes-board,
+  .notes-list {
+    display: grid;
+    gap: var(--space-xl);
+  }
+
+  .notes-tools {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 38rem;
+  }
+
+  .notes-tools label {
+    font-weight: 700;
+  }
+
+  .notes-tools input {
+    min-height: 3rem;
+    padding-inline: var(--space-md);
+    border: var(--rule-strong) solid var(--color-ink);
+    outline: var(--rule-focus) solid transparent;
+    outline-offset: 0.1rem;
+    background: var(--color-paper-raised);
+  }
+
+  .notes-tools input:focus-visible {
+    outline-color: var(--color-focus);
+  }
+
+  .notes-tools p {
+    color: var(--color-ink-muted);
+  }
+
+  .note-sheet,
+  .notes-empty {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-lg);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .note-sheet:nth-child(even) {
+    transform: rotate(0.2deg);
+  }
+
+  .note-sheet__head {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-md);
+    padding-block-end: var(--space-sm);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .note-sheet h2 {
+    font-size: var(--text-lg);
+  }
+
+  .note-sheet span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+  }
+
+  .note-sheet p {
+    max-width: 65ch;
+    white-space: pre-wrap;
+  }
+
+  .note-sheet a {
+    justify-self: start;
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  @media (min-width: 60rem) {
+    .notes-list {
+      grid-template-columns: minmax(0, 1.15fr) minmax(18rem, 0.85fr);
+      align-items: start;
+    }
+
+    .note-sheet:nth-child(3n) {
+      grid-column: 1 / -1;
+      width: 70%;
+      justify-self: end;
+    }
+  }
+</style>

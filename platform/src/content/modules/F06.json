@@ -1,0 +1,16 @@
+{
+  "id": "F06",
+  "trackId": "flutter",
+  "order": 6,
+  "slug": "f06-proyecto-bitacora-crud",
+  "title": "Proyecto: bitácora CRUD verificable",
+  "summary": "Integra layout, estado, formularios y arquitectura en una bitácora con repositorio en memoria y pruebas por capa.",
+  "status": "available",
+  "estimatedHours": 12,
+  "prerequisites": ["F05"],
+  "outcomes": [
+    "Completar y explicar el flujo crear, leer, editar y eliminar una entrada.",
+    "Proteger Repository, ViewModel y View con pruebas unitarias y de widgets."
+  ],
+  "lessonIds": ["F06-L01"]
+}

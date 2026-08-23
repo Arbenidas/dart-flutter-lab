@@ -1,0 +1,38 @@
+[
+  {
+    "id": "m02-tipos-demasiado-especificos",
+    "target": "m02_tipos.dart",
+    "find": "String describirTipo(Object valor) {\n  // El orden importa: `int` y `double` son ambos `num`, pero ninguno\n  // es subtipo del otro. Preguntar por `num` primero seria un bug.\n  if (valor is int) return 'entero';\n  if (valor is double) return 'decimal';\n  if (valor is String) return 'texto';\n  if (valor is bool) return 'booleano';\n  if (valor is List<Object?>) return 'lista';\n  return 'otro';\n}",
+    "replace": "String describirTipo(Object valor) {\n  if (valor is List<int>) return 'lista';\n  return 'otro';\n}"
+  },
+  {
+    "id": "m02-semana-sin-contrato",
+    "target": "m02_tipos.dart",
+    "find": "List<String> semanaCompleta() => <String>[...diasHabiles, 'sabado', 'domingo'];",
+    "replace": "List<String> semanaCompleta() =>\n    <String>['x', 'x', 'x', 'x', 'x', 'x', 'domingo'];"
+  },
+  {
+    "id": "m02-centavos-negativos-aceptados",
+    "target": "m02_tipos.dart",
+    "find": "  if (centavos < 0) {\n    throw RangeError.range(centavos, 0, null, 'centavos');\n  }",
+    "replace": "  // Mutante: omite deliberadamente el contrato de negativos."
+  },
+  {
+    "id": "m03-state-error-manual",
+    "target": "m03_null_safety.dart",
+    "find": "  late final DateTime _inicio;\n\n  void comenzar(DateTime cuando) {\n    _inicio = cuando;\n  }\n\n  int minutosHasta(DateTime ahora) => ahora.difference(_inicio).inMinutes;",
+    "replace": "  DateTime? _inicio;\n\n  void comenzar(DateTime cuando) {\n    _inicio = cuando;\n  }\n\n  int minutosHasta(DateTime ahora) {\n    if (_inicio == null) throw StateError('sin inicio');\n    return ahora.difference(_inicio!).inMinutes;\n  }"
+  },
+  {
+    "id": "m04-fibonacci-negativo-vacio",
+    "target": "m04_control.dart",
+    "find": "  if (n < 0) {\n    throw RangeError.range(n, 0, null, 'n');\n  }",
+    "replace": "  if (n < 0) return <int>[];"
+  },
+  {
+    "id": "m05-medicion-ficticia",
+    "target": "m05_funciones.dart",
+    "find": "int medirMilisegundos(void Function() accion) {\n  final reloj = Stopwatch()..start();\n  try {\n    accion();\n  } finally {\n    reloj.stop();\n  }\n  return reloj.elapsedMilliseconds;\n}",
+    "replace": "int medirMilisegundos(void Function() accion) => 0;"
+  }
+]

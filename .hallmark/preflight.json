@@ -1,0 +1,10 @@
+{
+  "date": "2026-08-23",
+  "framework": "none before implementation",
+  "fontStack": "none",
+  "palette": "none",
+  "motion": "none",
+  "spacing": "none",
+  "preserve": ["Dart laboratory content and pedagogy"],
+  "introduce": ["Astro", "custom neobrutalist tokens", "Workbench macrostructure"]
+}

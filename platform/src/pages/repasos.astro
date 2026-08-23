@@ -1,0 +1,130 @@
+---
+import ReviewQueue from '../components/ReviewQueue.astro';
+import { getCatalog, lessonClientCatalog } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+---
+
+<BaseLayout
+  title="Repasos"
+  description="Cola local de recuperación activa para recordar Dart y Flutter a largo plazo."
+>
+  <header class="page-head container">
+    <p class="eyebrow">Repaso espaciado</p>
+    <h1>Recordar también se practica.</h1>
+    <p>
+      Primero responde de memoria. Después consulta la lección y corrige la explicación, no tu
+      autoestima.
+    </p>
+  </header>
+
+  <section class="review-rhythm container" aria-labelledby="rhythm-title">
+    <div>
+      <p class="eyebrow">Ritmo local</p>
+      <h2 id="rhythm-title">Cuatro encuentros, cada vez más lejos</h2>
+    </div>
+    <ol aria-label="Intervalos de repaso">
+      <li><strong>+1</strong><span>día</span></li>
+      <li><strong>+3</strong><span>días</span></li>
+      <li><strong>+7</strong><span>días</span></li>
+      <li><strong>+21</strong><span>días</span></li>
+    </ol>
+    <p>
+      “Necesito practicar” no reinicia tu camino: programa otro intento cercano. “Lo expliqué sin
+      ayuda” amplía el intervalo.
+    </p>
+  </section>
+
+  <div class="review-shell container">
+    <ReviewQueue lessons={lessonClientCatalog(catalog.lessons)} />
+    <noscript
+      ><p class="no-script panel">
+        Activa JavaScript para leer y actualizar la cola guardada en este navegador. Las lecciones
+        siguen disponibles sin conexión a una cuenta.
+      </p></noscript
+    >
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 13ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .review-rhythm {
+    display: grid;
+    gap: var(--space-lg);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .review-rhythm > div {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .review-rhythm ol {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+    list-style: none;
+  }
+
+  .review-rhythm li {
+    display: grid;
+    justify-items: center;
+    padding: var(--space-sm);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+    border-inline-end: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .review-rhythm strong {
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+  }
+
+  .review-rhythm span {
+    font-size: var(--text-xs);
+  }
+
+  .review-rhythm > p {
+    max-width: 65ch;
+    color: var(--color-ink-muted);
+  }
+
+  .review-shell {
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+
+  .no-script {
+    margin-block-start: var(--space-xl);
+    padding: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .review-rhythm {
+      grid-template-columns: minmax(0, 1fr) minmax(20rem, 0.8fr);
+      align-items: end;
+    }
+
+    .review-rhythm > p {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

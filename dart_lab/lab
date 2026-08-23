@@ -1,0 +1,11 @@
+#!/usr/bin/env sh
+set -eu
+
+if ! command -v fvm >/dev/null 2>&1; then
+  printf '%s\n' 'Falta FVM; ejecuta ../tool/preflight.sh desde la raíz del proyecto.' >&2
+  exit 1
+fi
+
+lab_root=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+cd "$lab_root"
+exec fvm dart run bin/lab.dart "$@"

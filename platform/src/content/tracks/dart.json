@@ -1,0 +1,27 @@
+{
+  "id": "dart",
+  "order": 0,
+  "slug": "dart",
+  "title": "Dart desde cero",
+  "summary": "Aprende a razonar con tipos, datos, funciones, asincronía y pruebas antes de construir interfaces.",
+  "promise": "Al terminar podrás diseñar, explicar, probar y mantener programas Dart sin depender de respuestas copiadas.",
+  "status": "available",
+  "moduleIds": [
+    "D00",
+    "D01",
+    "D02",
+    "D03",
+    "D04",
+    "D05",
+    "D06",
+    "D07",
+    "D08",
+    "D09",
+    "D10",
+    "D11",
+    "D12",
+    "D13",
+    "D14",
+    "D15"
+  ]
+}

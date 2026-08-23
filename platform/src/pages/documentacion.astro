@@ -1,0 +1,349 @@
+---
+import { getCatalog, lessonHref } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+const sourceKindLabels = {
+  guide: 'Guía',
+  api: 'Referencia API',
+  cookbook: 'Receta',
+  package: 'Paquete',
+  changelog: 'Cambios',
+} as const;
+const sources = catalog.lessons
+  .flatMap((lesson) =>
+    lesson.data.docRefs.map((source) => ({
+      ...source,
+      lessonTitle: lesson.data.title,
+      lessonHref: lessonHref(lesson),
+    })),
+  )
+  .filter(
+    (source, index, all) => all.findIndex((candidate) => candidate.url === source.url) === index,
+  );
+const verifiedDate = new Intl.DateTimeFormat('es-419', {
+  month: 'short',
+  year: 'numeric',
+  timeZone: 'UTC',
+});
+---
+
+<BaseLayout
+  title="Documentación"
+  description="Método práctico para leer documentación oficial de Dart y Flutter sin perderse."
+>
+  <div data-pagefind-body>
+    <header class="page-head container">
+      <p class="eyebrow">Documentación oficial</p>
+      <h1>No la leas como una novela.</h1>
+      <p>
+        La documentación responde mejor cuando llegas con una pregunta concreta, un término y un
+        experimento pequeño.
+      </p>
+    </header>
+
+    <section class="reading-loop container" aria-labelledby="reading-loop-title">
+      <header>
+        <p class="eyebrow">Ruta de lectura</p>
+        <h2 id="reading-loop-title">De la duda a una decisión verificable</h2>
+      </header>
+      <ol>
+        <li>
+          <span>01</span><div>
+            <h3>Escribe la duda</h3><p>
+              Convierte “no entiendo null safety” en “¿cuándo un valor puede ser <code>null</code> y quién
+              debe comprobarlo?”.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span>02</span><div>
+            <h3>Extrae el término</h3><p>
+              Busca el nombre que usa la herramienta: tipo nullable, parámetro nombrado, <em
+                >StatefulWidget</em
+              > o <em>Future</em>.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span>03</span><div>
+            <h3>Elige la fuente</h3><p>
+              Empieza con una guía para el modelo mental; usa la referencia API cuando necesites una
+              firma exacta.
+            </p>
+          </div>
+        </li>
+        <li>
+          <span>04</span><div>
+            <h3>Prueba una afirmación</h3><p>
+              Reduce lo leído a un archivo o widget mínimo, predice el resultado y deja que el
+              analizador contradiga tu idea.
+            </p>
+          </div>
+        </li>
+      </ol>
+    </section>
+
+    <div class="docs-layout container">
+      <section class="source-types" aria-labelledby="source-types-title">
+        <p class="eyebrow">Mapa de fuentes</p>
+        <h2 id="source-types-title">Cada página tiene un trabajo</h2>
+        <dl>
+          <div>
+            <dt>Guía</dt><dd>Construye el modelo mental y muestra el recorrido recomendado.</dd>
+          </div>
+          <div>
+            <dt>Referencia API</dt><dd>
+              Responde qué recibe, qué devuelve y qué contrato promete una clase o función.
+            </dd>
+          </div>
+          <div>
+            <dt>Receta</dt><dd>
+              Resuelve una tarea acotada; úsala como ejemplo, no como arquitectura universal.
+            </dd>
+          </div>
+          <div>
+            <dt>Paquete</dt><dd>
+              Explica instalación, compatibilidad y superficie pública de una dependencia.
+            </dd>
+          </div>
+          <div>
+            <dt>Cambios</dt><dd>
+              Confirma si una solución corresponde a la versión que tienes instalada.
+            </dd>
+          </div>
+        </dl>
+      </section>
+
+      <aside class="reading-card" aria-labelledby="reading-card-title">
+        <p class="eyebrow">Ficha de lectura</p>
+        <h2 id="reading-card-title">Cinco marcas al margen</h2>
+        <ol>
+          <li>¿Qué problema promete resolver?</li>
+          <li>¿Cuál es la firma o estructura mínima?</li>
+          <li>¿Qué entra, qué sale y qué puede fallar?</li>
+          <li>¿Qué versión o plataforma limita la respuesta?</li>
+          <li>¿Qué experimento de cinco minutos lo comprueba?</li>
+        </ol>
+        <p>
+          Si no puedes contestar la quinta, todavía reuniste información; aún no construiste
+          conocimiento.
+        </p>
+      </aside>
+    </div>
+
+    <section class="source-index container" aria-labelledby="source-index-title">
+      <header>
+        <div>
+          <p class="eyebrow">Directorio curado</p>
+          <h2 id="source-index-title">Fuentes usadas en las lecciones</h2>
+        </div>
+        <p>{sources.length} enlaces oficiales, con versión y fecha de revisión visibles.</p>
+      </header>
+      <ol>
+        {
+          sources.map((source) => (
+            <li>
+              <div class="source-index__meta">
+                <span>{sourceKindLabels[source.kind]}</span>
+                <small>
+                  {source.version} ·{' '}
+                  {verifiedDate.format(new Date(`${source.lastVerified}T00:00:00Z`))}
+                </small>
+              </div>
+              <div>
+                <h3>
+                  <a href={source.url} target="_blank" rel="noreferrer">
+                    {source.label}
+                    <span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+                  </a>
+                </h3>
+                <p>
+                  Se trabaja en <a href={source.lessonHref}>{source.lessonTitle}</a>.
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head,
+  .reading-loop,
+  .source-types,
+  .reading-card,
+  .source-index {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .page-head {
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 13ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .reading-loop {
+    padding-block: var(--space-xl) var(--space-2xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .reading-loop header {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .reading-loop ol,
+  .source-index ol {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .reading-loop li {
+    display: grid;
+    grid-template-columns: 3rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .reading-loop li > span,
+  .source-index__meta span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .reading-loop h3 {
+    margin-block-end: var(--space-xs);
+  }
+
+  .reading-loop p,
+  .source-index p {
+    color: var(--color-ink-muted);
+  }
+
+  .docs-layout {
+    display: grid;
+    gap: var(--space-2xl);
+    padding-block: var(--space-2xl);
+  }
+
+  .source-types dl {
+    display: grid;
+    margin: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .source-types dl div {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .source-types dt {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  .source-types dd {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .reading-card {
+    align-content: start;
+    padding: var(--space-lg);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+    box-shadow: var(--shadow-hard);
+  }
+
+  .reading-card ol {
+    display: grid;
+    gap: var(--space-sm);
+    margin: 0;
+    padding-inline-start: var(--space-lg);
+  }
+
+  .source-index {
+    padding-block: var(--space-xl) var(--space-3xl);
+  }
+
+  .source-index > header {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .source-index > header div {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .source-index li {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .source-index__meta {
+    display: grid;
+    align-content: start;
+    gap: var(--space-2xs);
+  }
+
+  .source-index__meta span {
+    width: fit-content;
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-thin) solid currentColor;
+  }
+
+  .source-index__meta small {
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+  }
+
+  .source-index h3 a {
+    overflow-wrap: anywhere;
+  }
+
+  @media (min-width: 48rem) {
+    .docs-layout {
+      grid-template-columns: minmax(0, 1.2fr) minmax(17rem, 0.8fr);
+      align-items: start;
+    }
+
+    .reading-card {
+      margin-block-start: var(--space-xl);
+      transform: rotate(0.35deg);
+    }
+
+    .source-types dl div {
+      grid-template-columns: 10rem minmax(0, 1fr);
+    }
+
+    .source-index > header {
+      grid-template-columns: minmax(0, 1fr) 20rem;
+      align-items: end;
+    }
+
+    .source-index li {
+      grid-template-columns: 11rem minmax(0, 1fr);
+    }
+  }
+</style>

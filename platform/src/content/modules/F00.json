@@ -1,0 +1,16 @@
+{
+  "id": "F00",
+  "trackId": "flutter",
+  "order": 0,
+  "slug": "f00-modelo-de-widgets",
+  "title": "El modelo declarativo de widgets",
+  "summary": "Entiende Widget, Element y build antes de diseñar tu primera interfaz.",
+  "status": "available",
+  "estimatedHours": 6,
+  "prerequisites": ["D04"],
+  "outcomes": [
+    "Construir un StatelessWidget configurable y componible.",
+    "Explicar por qué los widgets son descripciones inmutables."
+  ],
+  "lessonIds": ["F00-L01"]
+}

@@ -1,0 +1,10 @@
+{
+  "id": "flutter",
+  "order": 1,
+  "slug": "flutter",
+  "title": "Flutter con criterio",
+  "summary": "Pasa del modelo declarativo de widgets a aplicaciones accesibles, testeables y bien separadas.",
+  "promise": "Aprenderás a elegir la estructura más simple que resuelve el problema y a reconocer cuándo una aplicación exige más arquitectura.",
+  "status": "available",
+  "moduleIds": ["F00", "F01", "F02", "F03", "F04", "F05", "F06"]
+}

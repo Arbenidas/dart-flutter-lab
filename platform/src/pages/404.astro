@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Página no encontrada"
+  description="La página solicitada no existe en Dart & Flutter Lab."
+>
+  <section class="not-found container" aria-labelledby="not-found-title">
+    <div class="error-code" aria-hidden="true">404</div>
+    <div class="not-found__copy">
+      <p class="eyebrow">Ruta interrumpida</p>
+      <h1 id="not-found-title">Esta página no forma parte del mapa.</h1>
+      <p>
+        Puede que el enlace haya cambiado o que el módulo todavía no esté publicado. Tu progreso
+        local no se perdió.
+      </p>
+      <nav aria-label="Destinos para continuar">
+        <a class="button button--primary" href="/hoy/">Volver a Hoy</a>
+        <a class="button" href="/ruta/">Ver la ruta completa</a>
+        <a href="/documentacion/">Abrir documentación →</a>
+      </nav>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    display: grid;
+    gap: var(--space-xl);
+    min-height: 65dvh;
+    align-content: center;
+    padding-block: var(--space-3xl);
+  }
+
+  .error-code {
+    width: fit-content;
+    padding: var(--space-xs) var(--space-md);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+    box-shadow: var(--shadow-hard);
+    font-family: var(--font-mono);
+    font-size: clamp(3rem, 13vw, 8rem);
+    font-weight: 700;
+    line-height: 0.9;
+    transform: rotate(-1deg);
+  }
+
+  .not-found__copy {
+    display: grid;
+    gap: var(--space-md);
+  }
+
+  .not-found h1 {
+    max-width: 13ch;
+  }
+
+  .not-found__copy > p:last-of-type {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .not-found nav {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-md);
+    margin-block-start: var(--space-md);
+  }
+
+  .not-found nav > a:last-child {
+    font-weight: 700;
+  }
+
+  @media (min-width: 52rem) {
+    .not-found {
+      grid-template-columns: minmax(14rem, 0.7fr) minmax(0, 1.3fr);
+      align-items: center;
+    }
+  }
+</style>

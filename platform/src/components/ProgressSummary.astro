@@ -1,0 +1,162 @@
+---
+interface LessonItem {
+  id: string;
+  title: string;
+  href: string;
+  moduleId: string;
+}
+
+interface Props {
+  lessons: LessonItem[];
+  compact?: boolean;
+}
+
+const { lessons, compact = false } = Astro.props;
+---
+
+<section
+  class:list={['progress-summary', 'panel', { 'progress-summary--compact': compact }]}
+  data-progress-summary
+  data-lessons={JSON.stringify(lessons)}
+>
+  <div class="progress-summary__copy">
+    <p class="eyebrow">Tu estado local</p>
+    <h2>{compact ? 'Continúa donde estabas' : 'Evidencia, no puntos'}</h2>
+    <p data-progress-message>Tu navegador todavía no tiene actividad guardada.</p>
+  </div>
+  <dl class="progress-summary__counts">
+    <div><dt>Iniciadas</dt><dd data-count-started>0</dd></div>
+    <div><dt>Completadas</dt><dd data-count-completed>0</dd></div>
+    <div><dt>Retenidas</dt><dd data-count-retained>0</dd></div>
+    <div><dt>Repasos hoy</dt><dd data-count-due>0</dd></div>
+  </dl>
+  <a class="button button--primary" href="/inicio/" data-continue-link>Preparar el laboratorio</a>
+  <p class="storage-warning" data-storage-warning hidden>
+    El almacenamiento persistente no está disponible. Esta sesión funcionará en memoria; exporta
+    antes de cerrar.
+  </p>
+</section>
+
+<script>
+  import { SITE } from '../config';
+  import { createProgressRepository, deriveLessonStatus, isReviewDue } from '../lib/progress';
+
+  document.querySelectorAll<HTMLElement>('[data-progress-summary]').forEach(async (root) => {
+    const lessons = JSON.parse(root.dataset.lessons ?? '[]') as Array<{
+      id: string;
+      title: string;
+      href: string;
+    }>;
+    const repository = await createProgressRepository(SITE.contentVersion);
+    const render = async () => {
+      const snapshot = await repository.getSnapshot();
+      const started = snapshot.lessons.length;
+      const completed = snapshot.lessons.filter((item) =>
+        ['completed', 'retained'].includes(deriveLessonStatus(item)),
+      ).length;
+      const retained = snapshot.lessons.filter(
+        (item) => deriveLessonStatus(item) === 'retained',
+      ).length;
+      const due = snapshot.lessons.filter((item) => isReviewDue(item)).length;
+      const set = (selector: string, value: string) => {
+        const node = root.querySelector<HTMLElement>(selector);
+        if (node) node.textContent = value;
+      };
+      set('[data-count-started]', String(started));
+      set('[data-count-completed]', String(completed));
+      set('[data-count-retained]', String(retained));
+      set('[data-count-due]', String(due));
+      const current =
+        lessons.find((lesson) => lesson.id === snapshot.meta.lastLessonId) ??
+        lessons.find(
+          (lesson) =>
+            !snapshot.lessons.some((item) => item.lessonId === lesson.id && item.completedAtUtc),
+        );
+      const link = root.querySelector<HTMLAnchorElement>('[data-continue-link]');
+      if (current && link) {
+        link.href = current.href;
+        link.textContent = started ? `Continuar: ${current.title}` : 'Abrir la primera lección';
+      }
+      set(
+        '[data-progress-message]',
+        started
+          ? `${completed} de ${lessons.length} lecciones disponibles tienen evidencia de cierre.`
+          : 'Empieza con una predicción; el progreso aparece después de tu primer intento.',
+      );
+      const warning = root.querySelector<HTMLElement>('[data-storage-warning]');
+      if (warning) warning.hidden = repository.mode !== 'memory';
+    };
+    await render();
+    repository.subscribe(() => void render());
+  });
+</script>
+
+<style>
+  .progress-summary {
+    display: grid;
+    gap: var(--space-lg);
+    padding: var(--space-lg);
+  }
+
+  h2 {
+    margin-block-start: var(--space-xs);
+    font-size: var(--text-xl);
+  }
+
+  .progress-summary__copy p:last-child {
+    max-width: 55ch;
+    margin-block-start: var(--space-sm);
+    color: var(--color-ink-muted);
+  }
+
+  .progress-summary__counts {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .progress-summary__counts div {
+    min-width: 0;
+    padding: var(--space-sm);
+    border-block-end: var(--rule-strong) solid var(--color-ink);
+    border-inline-end: var(--rule-strong) solid var(--color-ink);
+  }
+
+  dt {
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-xl);
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .button {
+    justify-self: start;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .storage-warning {
+    padding: var(--space-sm);
+    border: var(--rule-strong) dashed var(--color-warning);
+  }
+
+  @media (min-width: 40rem) {
+    .progress-summary:not(.progress-summary--compact) {
+      grid-template-columns: minmax(0, 1.2fr) minmax(16rem, 0.8fr);
+      align-items: start;
+    }
+
+    .progress-summary:not(.progress-summary--compact) .button,
+    .progress-summary:not(.progress-summary--compact) .storage-warning {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

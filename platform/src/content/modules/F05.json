@@ -1,0 +1,16 @@
+{
+  "id": "F05",
+  "trackId": "flutter",
+  "order": 5,
+  "slug": "f05-mvvm-feature-first-riverpod",
+  "title": "MVVM feature-first con Riverpod",
+  "summary": "Separa vista, estado y datos con límites que puedas probar y sustituir sin reescribir la feature.",
+  "status": "available",
+  "estimatedHours": 11,
+  "prerequisites": ["F04"],
+  "outcomes": [
+    "Asignar responsabilidades a View, ViewModel, Repository y Service.",
+    "Gestionar estado inmutable con Riverpod Notifier e inyectar repositorios por provider."
+  ],
+  "lessonIds": ["F05-L01"]
+}

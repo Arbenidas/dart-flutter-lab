@@ -1,0 +1,16 @@
+{
+  "id": "D00",
+  "trackId": "dart",
+  "order": 0,
+  "slug": "d00-aprender-a-aprender",
+  "title": "Aprender a programar sin delegar el pensamiento",
+  "summary": "Prepara el entorno, entiende el laboratorio y practica el ciclo PENSAR.",
+  "status": "available",
+  "estimatedHours": 2,
+  "prerequisites": [],
+  "outcomes": [
+    "Ejecutar un programa y el analizador desde la terminal.",
+    "Distinguir una pista útil de una respuesta que evita el aprendizaje."
+  ],
+  "lessonIds": ["D00-L01"]
+}

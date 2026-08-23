@@ -1,0 +1,16 @@
+{
+  "id": "D10",
+  "trackId": "dart",
+  "order": 10,
+  "slug": "d10-asincronia",
+  "title": "Futures, async/await y Streams",
+  "summary": "Razona sobre operaciones que terminan después y secuencias de eventos en el tiempo.",
+  "status": "available",
+  "estimatedHours": 9,
+  "prerequisites": ["D09"],
+  "outcomes": [
+    "Componer Futures con manejo explícito de errores.",
+    "Elegir Stream solo cuando el dato sea una secuencia temporal."
+  ],
+  "lessonIds": ["D10-L01"]
+}

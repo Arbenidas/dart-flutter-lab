@@ -1,0 +1,249 @@
+---
+import { getCatalog, moduleHref } from '../../lib/catalog';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+---
+
+<BaseLayout title="Ruta" description="Currículo de Dart y Flutter desde cero hasta arquitectura.">
+  <header class="page-head container">
+    <p class="eyebrow">Mapa completo</p>
+    <h1>El orden evita la magia.</h1>
+    <p>
+      Los módulos disponibles tienen lecciones completas. Los demás muestran el destino del
+      currículo sin fingir contenido terminado.
+    </p>
+  </header>
+
+  <div class="tracks container">
+    {
+      catalog.tracks.map((track) => (
+        <section class="track" aria-labelledby={`track-${track.data.id}`}>
+          <header class="track__head">
+            <div>
+              <p class="eyebrow">Ruta {track.data.order + 1}</p>
+              <h2 id={`track-${track.data.id}`}>{track.data.title}</h2>
+            </div>
+            <p>{track.data.promise}</p>
+          </header>
+          <ol class="module-map">
+            {catalog.modules
+              .filter((module) => module.data.trackId === track.data.id)
+              .map((module) => (
+                <li class:list={['module-map__item', `is-${module.data.status}`]}>
+                  <a href={moduleHref(module)}>
+                    <span class="module-map__id">{module.data.id}</span>
+                    <span class="module-map__copy">
+                      <strong>{module.data.title}</strong>
+                      <small>{module.data.summary}</small>
+                    </span>
+                    <span class="module-map__status">
+                      {module.data.status === 'available'
+                        ? 'Disponible'
+                        : module.data.status === 'preview'
+                          ? 'Vista previa'
+                          : 'Roadmap'}
+                    </span>
+                  </a>
+                </li>
+              ))}
+          </ol>
+        </section>
+      ))
+    }
+
+    <section class="future-roadmap" aria-labelledby="future-title">
+      <header>
+        <p class="eyebrow">Después de v1</p>
+        <h2 id="future-title">El mapa continúa, sin lecciones a medio escribir</h2>
+      </header>
+      <div class="future-roadmap__grid">
+        <article>
+          <span>DART++</span>
+          <h3>Lenguaje y plataforma</h3>
+          <p>
+            Isolates avanzados, streams bajo presión, metadatos, generación de código, interop, FFI,
+            rendimiento y publicación de paquetes.
+          </p>
+        </article>
+        <article>
+          <span>BACKEND</span>
+          <h3>APIs, datos y nube</h3>
+          <p>
+            Shelf, REST, autenticación, SQL y PostgreSQL, migraciones, transacciones, índices,
+            Docker, observabilidad, CI/CD y despliegue en Cloud Run.
+          </p>
+        </article>
+        <article>
+          <span>ARQ/LAB</span>
+          <h3>Una bitácora, varias arquitecturas</h3>
+          <p>
+            La misma feature con MVC, MVVM, Clean Architecture, Provider, Riverpod, Cubit y Bloc,
+            comparada por dependencias, flujo y coste de pruebas.
+          </p>
+        </article>
+      </div>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 12ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 60ch;
+    font-size: var(--text-md);
+  }
+
+  .tracks,
+  .track {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .tracks {
+    padding-block-end: var(--space-3xl);
+  }
+
+  .track {
+    padding-block-start: var(--space-xl);
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .track__head {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .track__head h2 {
+    margin-block-start: var(--space-xs);
+  }
+
+  .track__head > p {
+    max-width: 55ch;
+  }
+
+  .module-map {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    list-style: none;
+  }
+
+  .module-map__item a {
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    min-width: 0;
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+    text-decoration: none;
+  }
+
+  .module-map__id,
+  .module-map__status {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .module-map__copy strong,
+  .module-map__copy small {
+    display: block;
+  }
+
+  .module-map__copy small {
+    margin-block-start: var(--space-2xs);
+    color: var(--color-ink-muted);
+  }
+
+  .module-map__status {
+    grid-column: 2;
+    width: fit-content;
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-thin) solid currentColor;
+  }
+
+  .is-available .module-map__status {
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .is-roadmap {
+    color: var(--color-ink-muted);
+  }
+
+  .future-roadmap {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) dashed var(--color-ink);
+  }
+
+  .future-roadmap > header {
+    display: grid;
+    gap: var(--space-xs);
+    max-width: 58rem;
+  }
+
+  .future-roadmap__grid {
+    display: grid;
+    gap: var(--space-lg);
+  }
+
+  .future-roadmap article {
+    display: grid;
+    align-content: start;
+    gap: var(--space-sm);
+    padding: var(--space-lg);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper-raised);
+  }
+
+  .future-roadmap article > span {
+    width: fit-content;
+    padding: var(--space-2xs) var(--space-xs);
+    background: var(--color-acid);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .future-roadmap h3 {
+    font-size: var(--text-lg);
+  }
+
+  .future-roadmap article p {
+    color: var(--color-ink-muted);
+  }
+
+  @media (min-width: 48rem) {
+    .track__head {
+      grid-template-columns: minmax(0, 0.8fr) minmax(18rem, 1.2fr);
+      align-items: end;
+    }
+
+    .module-map__item a {
+      grid-template-columns: 4rem minmax(0, 1fr) 7rem;
+      align-items: start;
+    }
+
+    .module-map__status {
+      grid-column: 3;
+      justify-self: end;
+    }
+
+    .future-roadmap__grid {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+  }
+</style>

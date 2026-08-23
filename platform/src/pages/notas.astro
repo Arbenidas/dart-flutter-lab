@@ -1,0 +1,127 @@
+---
+import NotesBoard from '../components/NotesBoard.astro';
+import { getCatalog, lessonClientCatalog } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+---
+
+<BaseLayout
+  title="Notas"
+  description="Cuaderno local para recuperar tus propias explicaciones de Dart y Flutter."
+>
+  <header class="page-head container">
+    <p class="eyebrow">Cuaderno local</p>
+    <h1>Escribe para pensar otra vez.</h1>
+    <p>
+      Una nota útil registra qué creías, qué cambió y qué señal te permitiría reconocer el mismo
+      problema.
+    </p>
+  </header>
+
+  <section class="note-rule container" aria-labelledby="note-rule-title">
+    <div>
+      <p class="eyebrow">Formato sugerido</p>
+      <h2 id="note-rule-title">Tres líneas bastan</h2>
+    </div>
+    <ol>
+      <li><span>Antes</span><p>“Pensaba que…”</p></li>
+      <li><span>Ahora</span><p>“El comportamiento real es…”</p></li>
+      <li><span>Señal</span><p>“Lo reconoceré cuando…”</p></li>
+    </ol>
+    <p class="local-note">
+      Tus notas se quedan en este navegador. Exporta un respaldo desde <a href="/ajustes/datos/"
+        >Datos locales</a
+      > antes de borrar el almacenamiento o cambiar de equipo.
+    </p>
+  </section>
+
+  <div class="notes-shell container">
+    <NotesBoard lessons={lessonClientCatalog(catalog.lessons)} />
+    <noscript
+      ><p class="no-script panel">
+        Activa JavaScript para consultar las notas guardadas en este navegador. No necesitas crear
+        una cuenta.
+      </p></noscript
+    >
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 13ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 58ch;
+    font-size: var(--text-md);
+  }
+
+  .note-rule {
+    display: grid;
+    gap: var(--space-lg);
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .note-rule > div {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .note-rule ol {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    list-style: none;
+  }
+
+  .note-rule li {
+    display: grid;
+    grid-template-columns: 5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-sm);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .note-rule li span {
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+  }
+
+  .local-note {
+    max-width: 65ch;
+    padding-inline-start: var(--space-md);
+    border-inline-start: var(--rule-strong) solid var(--color-acid);
+    color: var(--color-ink-muted);
+  }
+
+  .notes-shell {
+    padding-block: var(--space-2xl) var(--space-3xl);
+  }
+
+  .no-script {
+    margin-block-start: var(--space-xl);
+    padding: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .note-rule {
+      grid-template-columns: minmax(13rem, 0.6fr) minmax(0, 1.4fr);
+      align-items: start;
+    }
+
+    .local-note {
+      grid-column: 2;
+    }
+  }
+</style>

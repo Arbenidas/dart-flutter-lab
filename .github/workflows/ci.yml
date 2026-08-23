@@ -1,0 +1,90 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  platform:
+    name: Platform · checks, E2E y Lighthouse
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    defaults:
+      run:
+        working-directory: platform
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24.16.0
+          cache: npm
+          cache-dependency-path: platform/package-lock.json
+      - run: npm install --global npm@11.13.0
+      - run: npm ci
+      - name: Instalar navegadores Playwright
+        run: npx playwright install --with-deps chromium firefox webkit
+      - run: npm run check
+      - run: npm test
+      - run: npm run test:e2e
+      - name: Compartir Chromium con Lighthouse
+        run: echo "CHROME_PATH=$(node -p \"require('@playwright/test').chromium.executablePath()\")" >> "$GITHUB_ENV"
+      - run: npm run test:lighthouse
+      - name: Guardar diagnósticos web
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: platform-reports
+          path: |
+            platform/playwright-report
+            platform/test-results
+            platform/lighthouse-results
+          if-no-files-found: ignore
+          retention-days: 7
+
+  dart-lab:
+    name: Dart Lab · estructura pública
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: dart_lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dart-lang/setup-dart@v1
+        with:
+          sdk: 3.13.1
+      - run: dart pub get --enforce-lockfile
+      - name: Validar la referencia y rechazar mutantes conocidos
+        run: dart run tool/verify_reference.dart
+      - run: dart format --output=none --set-exit-if-changed .
+      - run: dart analyze
+      - name: Verificar contratos sin resolver los TODO del estudiante
+        run: dart test test/public_contract_test.dart
+
+  flutter-lab:
+    name: Flutter Lab · analyze, test y web build
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    defaults:
+      run:
+        working-directory: flutter_lab
+    steps:
+      - uses: actions/checkout@v4
+      - uses: subosito/flutter-action@v2
+        with:
+          flutter-version: 3.47.1
+          channel: stable
+          cache: true
+      - run: flutter pub get --enforce-lockfile
+      - run: dart format --output=none --set-exit-if-changed lib test
+      - run: flutter analyze
+      - run: flutter test
+      - run: flutter build web --release

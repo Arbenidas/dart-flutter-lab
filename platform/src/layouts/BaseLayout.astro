@@ -1,0 +1,91 @@
+---
+import { SITE } from '../config';
+import Footer from '../components/Footer.astro';
+import SiteNavigation from '../components/SiteNavigation.astro';
+import '../styles/global.css';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  pageClass?: string;
+}
+
+const {
+  title,
+  description = SITE.description,
+  image = '/og-default.png',
+  pageClass = '',
+} = Astro.props;
+const pageTitle = title ? `${title} · ${SITE.name}` : SITE.name;
+const canonical = new URL(Astro.url.pathname, Astro.site ?? Astro.url.origin);
+const socialImage = new URL(image, Astro.site ?? Astro.url.origin);
+---
+
+<!doctype html>
+<html lang={SITE.locale}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#F2EBDD" />
+    <meta name="description" content={description} />
+    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="es_419" />
+    <meta property="og:title" content={pageTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={socialImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta
+      property="og:image:alt"
+      content="Dart & Flutter Lab — aprende, prueba, explica y reaplica"
+    />
+    <meta name="twitter:card" content="summary_large_image" />
+    <title>{pageTitle}</title>
+  </head>
+  <body class={pageClass}>
+    <a class="skip-link" href="#contenido">Saltar al contenido</a>
+    <div class="site-shell">
+      <SiteNavigation currentPath={Astro.url.pathname} />
+      <div class="site-frame">
+        <main id="contenido" tabindex="-1">
+          <slot />
+        </main>
+        <Footer />
+      </div>
+    </div>
+  </body>
+</html>
+
+<style>
+  .site-shell {
+    min-height: 100dvh;
+  }
+
+  .site-frame {
+    min-width: 0;
+    padding-block-end: 5.5rem;
+  }
+
+  main {
+    min-width: 0;
+  }
+
+  @media (min-width: 60rem) {
+    .site-shell {
+      display: grid;
+      grid-template-columns: 15.5rem minmax(0, 1fr);
+      width: min(100%, var(--shell-max));
+      margin-inline: auto;
+    }
+
+    .site-frame {
+      border-inline: var(--rule-thin) solid var(--color-rule-soft);
+      padding-block-end: 0;
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+{
+  "id": "D09",
+  "trackId": "dart",
+  "order": 9,
+  "slug": "d09-errores-y-depuracion",
+  "title": "Errores y depuración sistemática",
+  "summary": "Distingue fallos esperados, excepciones y bugs; reduce cada problema a una prueba.",
+  "status": "available",
+  "estimatedHours": 6,
+  "prerequisites": ["D08"],
+  "outcomes": [
+    "Leer stack traces desde la primera línea propia.",
+    "Diseñar errores que conserven contexto y permitan recuperación."
+  ],
+  "lessonIds": ["D09-L01"]
+}

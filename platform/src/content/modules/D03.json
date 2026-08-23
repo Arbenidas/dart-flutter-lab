@@ -1,0 +1,16 @@
+{
+  "id": "D03",
+  "trackId": "dart",
+  "order": 3,
+  "slug": "d03-control-y-patterns",
+  "title": "Decisiones, ciclos y patterns",
+  "summary": "Expresa reglas de negocio con ramas exhaustivas, iteración y desestructuración.",
+  "status": "available",
+  "estimatedHours": 6,
+  "prerequisites": ["D02"],
+  "outcomes": [
+    "Elegir entre if, switch y ciclos según la forma del problema.",
+    "Comprobar límites y casos faltantes antes de ejecutar."
+  ],
+  "lessonIds": ["D03-L01"]
+}

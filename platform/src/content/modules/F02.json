@@ -1,0 +1,16 @@
+{
+  "id": "F02",
+  "trackId": "flutter",
+  "order": 2,
+  "slug": "f02-estado-e-interaccion",
+  "title": "Estado local e interacción",
+  "summary": "Haz que la interfaz reaccione manteniendo cada estado en el alcance más pequeño posible.",
+  "status": "available",
+  "estimatedHours": 9,
+  "prerequisites": ["F01"],
+  "outcomes": [
+    "Elegir StatelessWidget, StatefulWidget o estado elevado según la responsabilidad.",
+    "Acotar reconstrucciones y liberar recursos del ciclo de vida."
+  ],
+  "lessonIds": ["F02-L01"]
+}

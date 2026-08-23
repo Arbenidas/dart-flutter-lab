@@ -1,0 +1,16 @@
+{
+  "id": "D04",
+  "trackId": "dart",
+  "order": 4,
+  "slug": "d04-funciones-y-closures",
+  "title": "Funciones que expresan intención",
+  "summary": "Diseña firmas legibles y usa funciones como valores sin perder claridad.",
+  "status": "available",
+  "estimatedHours": 6,
+  "prerequisites": ["D03"],
+  "outcomes": [
+    "Diseñar parámetros y retornos que hagan explícito el contrato.",
+    "Explicar closures, callbacks y funciones de orden superior."
+  ],
+  "lessonIds": ["D04-L01"]
+}

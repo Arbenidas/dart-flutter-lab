@@ -1,0 +1,50 @@
+name: Mejorar una lección
+description: Reporta una explicación confusa, prerrequisito ausente, fuente incorrecta o archivo difícil de encontrar.
+title: "[Contenido]: "
+labels: ["content", "pedagogy", "needs triage"]
+body:
+  - type: input
+    id: lesson
+    attributes:
+      label: Lección
+      placeholder: D00-L01 · Tu primer programa en Dart
+    validations:
+      required: true
+  - type: dropdown
+    id: problem
+    attributes:
+      label: Problema principal
+      options:
+        - Usa un concepto antes de explicarlo
+        - Menciona un archivo que no encuentro
+        - El comando o ruta no funciona
+        - La documentación oficial no responde la pregunta
+        - La actividad o pista revela demasiado
+        - La explicación es ambigua o incorrecta
+        - Accesibilidad o legibilidad
+        - Otro problema pedagógico
+    validations:
+      required: true
+  - type: textarea
+    id: learner_context
+    attributes:
+      label: ¿Dónde se bloquea una persona principiante?
+      description: Describe qué conocimiento supone la lección y qué información falta.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Cambio propuesto
+      description: Si puedes, sugiere un ejemplo mínimo o una fuente oficial específica.
+    validations:
+      required: true
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Comprobaciones
+      options:
+        - label: Revisé la guía `docs/CURRICULUM.md`.
+          required: true
+        - label: Busqué issues similares.
+          required: true

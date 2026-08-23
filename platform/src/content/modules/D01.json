@@ -1,0 +1,16 @@
+{
+  "id": "D01",
+  "trackId": "dart",
+  "order": 1,
+  "slug": "d01-tipos-y-variables",
+  "title": "Tipos, valores y variables",
+  "summary": "Construye un modelo mental de referencias, inferencia, mutabilidad y constantes.",
+  "status": "available",
+  "estimatedHours": 5,
+  "prerequisites": ["D00"],
+  "outcomes": [
+    "Elegir entre var, final y const justificando la decisión.",
+    "Leer errores de tipos y corregir su causa en lugar de ocultarlos."
+  ],
+  "lessonIds": ["D01-L01"]
+}

@@ -1,0 +1,13 @@
+name: dart_lab
+description: Laboratorio de ejercicios para reconstruir las bases de Dart desde cero.
+publish_to: none
+version: 0.1.0
+
+environment:
+  sdk: '>=3.13.0 <3.14.0'
+
+dev_dependencies:
+  # Versiones exactas: todos los estudiantes reciben el mismo laboratorio.
+  analyzer: 12.1.0
+  lints: 6.1.0
+  test: 1.31.1

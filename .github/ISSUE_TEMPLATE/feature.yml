@@ -1,0 +1,47 @@
+name: Proponer una mejora
+description: Propón una capacidad, ruta curricular o cambio de arquitectura antes de implementarlo.
+title: "[Propuesta]: "
+labels: ["enhancement", "needs discussion"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problema que quieres resolver
+      description: Describe a quién afecta y qué ocurre hoy. Evita empezar por una tecnología.
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Resultado verificable
+      description: ¿Qué podría hacer o entender una persona después del cambio?
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Propuesta
+      description: Explica el alcance mínimo, datos, interfaz o arquitectura implicada.
+    validations:
+      required: true
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternativas consideradas
+      description: Incluye la opción de no añadir una dependencia o abstracción.
+    validations:
+      required: true
+  - type: textarea
+    id: risks
+    attributes:
+      label: Riesgos y mantenimiento
+      description: Compatibilidad, accesibilidad, seguridad, migraciones, tamaño o coste futuro.
+    validations:
+      required: true
+  - type: checkboxes
+    id: agreement
+    attributes:
+      label: Acuerdo
+      options:
+        - label: Esperaré acuerdo sobre el alcance antes de abrir un PR grande.
+          required: true

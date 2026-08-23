@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Sitio publicado
+    url: https://dart-flutter-lab.netlify.app/
+    about: Comprueba primero si el problema también ocurre en la versión pública.
+  - name: Reporte privado de seguridad
+    url: https://github.com/Arbenidas/dart-flutter-lab/security/advisories/new
+    about: No publiques vulnerabilidades, secretos ni datos sensibles en un issue.

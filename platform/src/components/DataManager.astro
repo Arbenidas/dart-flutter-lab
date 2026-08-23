@@ -1,0 +1,336 @@
+<section class="data-manager" data-data-manager>
+  <article class="data-action panel">
+    <div>
+      <p class="eyebrow">Respaldo</p>
+      <h2>Descarga lo que escribiste</h2>
+      <p>
+        El archivo incluye progreso, respuestas, pistas, notas y repasos. No incluye contenido del
+        curso ni código local.
+      </p>
+    </div>
+    <button class="button button--primary" type="button" data-export>Exportar JSON</button>
+  </article>
+
+  <article class="data-action panel">
+    <div>
+      <p class="eyebrow">Restauración</p>
+      <h2>Reemplaza desde una copia</h2>
+      <p>
+        Máximo 2 MB. Primero validamos y mostramos un resumen; nunca mezclamos estados
+        silenciosamente.
+      </p>
+    </div>
+    <label class="file-control">
+      <span>Elegir archivo JSON</span>
+      <input type="file" accept="application/json,.json" data-import-file />
+    </label>
+    <div class="import-preview" data-import-preview hidden>
+      <h3>Resumen de la copia</h3>
+      <dl>
+        <div><dt>Lecciones</dt><dd data-preview-lessons>0</dd></div>
+        <div><dt>Notas</dt><dd data-preview-notes>0</dd></div>
+        <div><dt>Completadas</dt><dd data-preview-completed>0</dd></div>
+        <div><dt>Retenidas</dt><dd data-preview-retained>0</dd></div>
+      </dl>
+      <div class="import-actions">
+        <button class="button" type="button" data-export-current>Descargar estado actual</button>
+        <button class="button button--primary" type="button" data-import-confirm
+          >Reemplazar datos</button
+        >
+      </div>
+    </div>
+    <p class="form-status" data-import-status aria-live="polite">Ningún archivo seleccionado.</p>
+  </article>
+
+  <article class="data-action data-action--danger panel">
+    <div>
+      <p class="eyebrow">Zona irreversible</p>
+      <h2>Borra el progreso de este origen</h2>
+      <p>
+        Esto no borra tus proyectos locales. Exporta primero si quieres conservar notas y repasos.
+      </p>
+    </div>
+    <button class="button" type="button" data-clear-open>Borrar datos locales</button>
+  </article>
+
+  <p class="storage-warning" data-storage-warning hidden>
+    El navegador bloqueó IndexedDB. Los cambios actuales viven solo en memoria.
+  </p>
+
+  <dialog class="clear-dialog" data-clear-dialog aria-labelledby="clear-title">
+    <h2 id="clear-title">Confirma el borrado</h2>
+    <p>Escribe <strong>BORRAR</strong>. No podremos recuperar el estado sin una exportación.</p>
+    <label for="clear-confirmation">Palabra de confirmación</label>
+    <input id="clear-confirmation" type="text" autocomplete="off" data-clear-input />
+    <div>
+      <button class="button" type="button" data-clear-cancel>Conservar datos</button>
+      <button class="button" type="button" data-clear-confirm disabled
+        >Borrar definitivamente</button
+      >
+    </div>
+  </dialog>
+</section>
+
+<script>
+  import { SITE } from '../config';
+  import {
+    MAX_IMPORT_BYTES,
+    createProgressExport,
+    createProgressRepository,
+    exportFilename,
+    parseProgressImport,
+    snapshotFromExport,
+  } from '../lib/progress';
+
+  document.querySelectorAll<HTMLElement>('[data-data-manager]').forEach(async (root) => {
+    const repository = await createProgressRepository(SITE.contentVersion);
+    const warning = root.querySelector<HTMLElement>('[data-storage-warning]');
+    if (warning) warning.hidden = repository.mode !== 'memory';
+    let pendingImport: ReturnType<typeof parseProgressImport> | undefined;
+
+    const download = async (filename = exportFilename()) => {
+      const data = createProgressExport(
+        await repository.getSnapshot(),
+        SITE.appVersion,
+        SITE.contentVersion,
+      );
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const anchor = document.createElement('a');
+      anchor.href = url;
+      anchor.download = filename;
+      anchor.click();
+      window.setTimeout(() => URL.revokeObjectURL(url), 0);
+    };
+    root
+      .querySelector<HTMLButtonElement>('[data-export]')
+      ?.addEventListener('click', () => void download());
+    root
+      .querySelector<HTMLButtonElement>('[data-export-current]')
+      ?.addEventListener('click', () => void download());
+
+    const file = root.querySelector<HTMLInputElement>('[data-import-file]');
+    const preview = root.querySelector<HTMLElement>('[data-import-preview]');
+    const importStatus = root.querySelector<HTMLElement>('[data-import-status]');
+    file?.addEventListener('change', async () => {
+      const selected = file.files?.[0];
+      if (!selected || !preview || !importStatus) return;
+      preview.hidden = true;
+      pendingImport = undefined;
+      try {
+        if (selected.size > MAX_IMPORT_BYTES)
+          throw new RangeError('El archivo supera el límite de 2 MB.');
+        pendingImport = parseProgressImport(await selected.text());
+        const set = (selector: string, value: number) => {
+          const node = root.querySelector<HTMLElement>(selector);
+          if (node) node.textContent = String(value);
+        };
+        set('[data-preview-lessons]', pendingImport.lessonCount);
+        set('[data-preview-notes]', pendingImport.noteCount);
+        set('[data-preview-completed]', pendingImport.completedCount);
+        set('[data-preview-retained]', pendingImport.retainedCount);
+        preview.hidden = false;
+        importStatus.textContent = `Copia válida del ${new Date(pendingImport.exportedAtUtc).toLocaleDateString('es-419')}. Revisa el resumen antes de reemplazar.`;
+      } catch (error) {
+        importStatus.textContent =
+          error instanceof Error ? error.message : 'El archivo no se pudo validar.';
+      }
+    });
+
+    root
+      .querySelector<HTMLButtonElement>('[data-import-confirm]')
+      ?.addEventListener('click', async (event) => {
+        if (!pendingImport || !importStatus || !preview) return;
+        const button = event.currentTarget as HTMLButtonElement;
+        button.dataset.state = 'loading';
+        button.textContent = 'Reemplazando…';
+        try {
+          await download(
+            `flutter-lab-respaldo-previo-${new Date().toISOString().slice(0, 10)}.json`,
+          );
+          await repository.replace(snapshotFromExport(pendingImport.data));
+          button.dataset.state = 'success';
+          button.textContent = 'Datos restaurados';
+          importStatus.textContent =
+            'Descargamos un respaldo previo y la copia sustituyó el estado local en una sola transacción.';
+          preview.hidden = true;
+          pendingImport = undefined;
+          if (file) file.value = '';
+        } catch {
+          button.dataset.state = 'error';
+          button.textContent = 'Intentar de nuevo';
+          importStatus.textContent =
+            'La importación no terminó. Tus datos anteriores siguen intactos.';
+        }
+      });
+
+    const dialog = root.querySelector<HTMLDialogElement>('[data-clear-dialog]');
+    const clearInput = root.querySelector<HTMLInputElement>('[data-clear-input]');
+    const clearConfirm = root.querySelector<HTMLButtonElement>('[data-clear-confirm]');
+    root.querySelector<HTMLButtonElement>('[data-clear-open]')?.addEventListener('click', () => {
+      dialog?.showModal();
+      clearInput?.focus();
+    });
+    root
+      .querySelector<HTMLButtonElement>('[data-clear-cancel]')
+      ?.addEventListener('click', () => dialog?.close());
+    clearInput?.addEventListener('input', () => {
+      if (clearConfirm) clearConfirm.disabled = clearInput.value !== 'BORRAR';
+    });
+    clearConfirm?.addEventListener('click', async () => {
+      await repository.clear();
+      dialog?.close();
+      window.location.assign('/inicio/');
+    });
+  });
+</script>
+
+<style>
+  .data-manager {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-xl);
+    min-width: 0;
+  }
+
+  .data-action {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--space-lg);
+    min-width: 0;
+    padding: var(--space-lg);
+  }
+
+  .data-action h2 {
+    margin-block: var(--space-xs);
+    font-size: var(--text-xl);
+  }
+
+  .data-action p:not(.eyebrow) {
+    max-width: 60ch;
+    color: var(--color-ink-muted);
+  }
+
+  .data-action--danger {
+    border-color: var(--color-danger);
+  }
+
+  .file-control {
+    display: grid;
+    gap: var(--space-xs);
+    min-width: 0;
+    font-weight: 700;
+  }
+
+  .file-control input {
+    width: 100%;
+    min-width: 0;
+    min-height: 3rem;
+    padding: var(--space-xs);
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-paper);
+  }
+
+  .import-preview {
+    display: grid;
+    gap: var(--space-md);
+    padding: var(--space-md);
+    border: var(--rule-strong) dashed var(--color-ink);
+  }
+
+  .import-preview[hidden] {
+    display: none;
+  }
+
+  .import-preview dl {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin: 0;
+  }
+
+  .import-preview dl div {
+    padding: var(--space-xs);
+    border: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .import-preview dd {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  .import-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  .form-status,
+  .storage-warning {
+    min-height: 1lh;
+    color: var(--color-ink-muted);
+  }
+
+  .storage-warning {
+    padding: var(--space-sm);
+    border: var(--rule-strong) dashed var(--color-warning);
+  }
+
+  .clear-dialog {
+    position: fixed;
+    inset: 0;
+    width: min(calc(100% - 2rem), 34rem);
+    height: fit-content;
+    margin: auto;
+    padding: var(--space-lg);
+    border: var(--rule-strong) solid var(--color-danger);
+    background: var(--color-paper-raised);
+    color: var(--color-ink);
+    box-shadow: 0.5rem 0.5rem 0 var(--color-shadow);
+  }
+
+  .clear-dialog::backdrop {
+    background: color-mix(in oklch, var(--color-ink) 65%, transparent);
+  }
+
+  .clear-dialog label,
+  .clear-dialog input {
+    display: block;
+    width: 100%;
+  }
+
+  .clear-dialog label {
+    margin-block-start: var(--space-md);
+    font-weight: 700;
+  }
+
+  .clear-dialog input {
+    min-height: 3rem;
+    margin-block: var(--space-xs) var(--space-lg);
+    padding-inline: var(--space-md);
+    border: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .clear-dialog > div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-md);
+  }
+
+  @media (min-width: 48rem) {
+    .data-action {
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: start;
+    }
+
+    .data-action > :not(:first-child) {
+      grid-column: 2;
+    }
+
+    .data-action .import-preview,
+    .data-action .form-status {
+      grid-column: 1 / -1;
+    }
+  }
+</style>

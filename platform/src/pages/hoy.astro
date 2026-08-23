@@ -1,0 +1,105 @@
+---
+import ProgressSummary from '../components/ProgressSummary.astro';
+import { getCatalog, lessonClientCatalog } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+---
+
+<BaseLayout title="Hoy" description="Retoma tu lección y los repasos pendientes.">
+  <header class="page-head container">
+    <p class="eyebrow">Mesa de trabajo</p>
+    <h1>Una misión a la vez.</h1>
+    <p>Retoma la última lección, atiende lo que ya venció y deja el resto fuera de la mesa.</p>
+  </header>
+  <div class="today-grid container">
+    <ProgressSummary lessons={lessonClientCatalog(catalog.lessons)} compact />
+    <a class="today-card today-card--review panel" href="/repasos/">
+      <span class="eyebrow">Recuperación</span>
+      <strong>Responder sin mirar</strong>
+      <span>Abre la cola de repasos vencidos.</span>
+    </a>
+    <a class="today-card panel" href="/notas/">
+      <span class="eyebrow">Cuaderno</span>
+      <strong>Releer tu propio lenguaje</strong>
+      <span>Busca una nota y vuelve al concepto.</span>
+    </a>
+    <aside class="today-rule">
+      <p>
+        Si tienes más de una hora, no añadas otra lección: reescribe un ejercicio ya resuelto sin
+        mirar.
+      </p>
+    </aside>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 11ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 55ch;
+    font-size: var(--text-md);
+  }
+
+  .today-grid {
+    display: grid;
+    gap: var(--space-xl);
+    padding-block-end: var(--space-3xl);
+  }
+
+  .today-card {
+    display: grid;
+    gap: var(--space-xs);
+    padding: var(--space-lg);
+    text-decoration: none;
+  }
+
+  .today-card strong {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+  }
+
+  .today-card span:last-child {
+    color: var(--color-ink-muted);
+  }
+
+  .today-card--review {
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .today-card--review span:last-child {
+    color: inherit;
+  }
+
+  .today-rule {
+    max-width: 50ch;
+    padding: var(--space-lg);
+    border-inline-start: var(--rule-strong) solid var(--color-ink);
+    font-size: var(--text-md);
+  }
+
+  @media (min-width: 48rem) {
+    .today-grid {
+      grid-template-columns: minmax(0, 1.35fr) minmax(16rem, 0.65fr);
+      align-items: start;
+    }
+
+    .today-grid > :first-child {
+      grid-row: 1 / 3;
+    }
+
+    .today-rule {
+      grid-column: 1 / -1;
+      justify-self: end;
+    }
+  }
+</style>

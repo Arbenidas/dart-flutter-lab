@@ -1,0 +1,16 @@
+{
+  "id": "D02",
+  "trackId": "dart",
+  "order": 2,
+  "slug": "d02-null-safety",
+  "title": "Null safety como contrato",
+  "summary": "Modela ausencia de datos y deja que el compilador pruebe tus supuestos.",
+  "status": "available",
+  "estimatedHours": 5,
+  "prerequisites": ["D01"],
+  "outcomes": [
+    "Distinguir tipos anulables y no anulables.",
+    "Resolver ausencia esperada sin abusar del operador de aserción."
+  ],
+  "lessonIds": ["D02-L01"]
+}

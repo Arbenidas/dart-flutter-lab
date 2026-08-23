@@ -1,0 +1,21 @@
+# El analizador es tu primer profesor. Configurado estricto a proposito:
+# quiero que te grite ahora, no que te deje pasar errores a produccion.
+include: package:lints/recommended.yaml
+
+analyzer:
+  language:
+    strict-casts: true # prohibe casts implicitos desde dynamic
+    strict-inference: true # prohibe inferir dynamic en silencio
+    strict-raw-types: true # prohibe List sin <T>
+  errors:
+    # Estas dos las subo a error: son las que mas se te van a colar.
+    unused_local_variable: error
+    dead_code: error
+linter:
+  rules:
+    - always_declare_return_types
+    - avoid_print # en librerias; en bin/ y tool/ usa un ignore explicito
+    - prefer_final_locals
+    - prefer_single_quotes
+    - unawaited_futures
+    - use_super_parameters

@@ -1,0 +1,66 @@
+name: Reportar un fallo
+description: Algo no funciona como debería en la plataforma o los laboratorios.
+title: "[Bug]: "
+labels: ["bug", "needs triage"]
+body:
+  - type: markdown
+    attributes:
+      value: Gracias por reportarlo. No incluyas secretos ni vulnerabilidades explotables aquí.
+  - type: dropdown
+    id: area
+    attributes:
+      label: Área
+      options:
+        - Plataforma web
+        - Contenido de una lección
+        - Dart Lab
+        - Flutter Lab
+        - Instalación o herramientas
+        - Despliegue
+    validations:
+      required: true
+  - type: input
+    id: url_or_path
+    attributes:
+      label: URL, lección o archivo
+      placeholder: /lecciones/... o dart_lab/lib/...
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Pasos para reproducir
+      description: Incluye la carpeta desde la que ejecutaste cada comando.
+      placeholder: |
+        1. Abrí...
+        2. Ejecuté...
+        3. Observé...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Resultado esperado
+    validations:
+      required: true
+  - type: textarea
+    id: actual
+    attributes:
+      label: Resultado actual
+      description: Pega el mensaje completo eliminando datos sensibles.
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Entorno
+      placeholder: macOS 15, Chrome 136, Flutter 3.47.1, Dart 3.13.x
+  - type: checkboxes
+    id: checks
+    attributes:
+      label: Comprobaciones
+      options:
+        - label: Busqué issues existentes.
+          required: true
+        - label: Confirmé que el reporte no contiene secretos ni datos personales.
+          required: true

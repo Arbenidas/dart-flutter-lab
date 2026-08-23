@@ -1,0 +1,204 @@
+---
+import ProgressSummary from '../components/ProgressSummary.astro';
+import { getCatalog, lessonClientCatalog } from '../lib/catalog';
+import BaseLayout from '../layouts/BaseLayout.astro';
+
+const catalog = await getCatalog();
+---
+
+<BaseLayout
+  title="Progreso"
+  description="Evidencias locales de práctica, cierre y retención en Dart y Flutter."
+>
+  <header class="page-head container">
+    <p class="eyebrow">Progreso local</p>
+    <h1>Cuenta evidencia, no rachas.</h1>
+    <p>
+      Una lección avanza cuando predices, pruebas, explicas y vuelves a recordar. El tiempo frente a
+      la pantalla no basta.
+    </p>
+  </header>
+
+  <div class="progress-shell container">
+    <ProgressSummary lessons={lessonClientCatalog(catalog.lessons)} />
+    <noscript
+      ><p class="no-script panel">
+        Activa JavaScript para calcular el resumen desde los datos de este navegador. Tu contenido
+        de estudio sigue siendo legible.
+      </p></noscript
+    >
+
+    <section class="status-key" aria-labelledby="status-key-title">
+      <header>
+        <p class="eyebrow">Cómo se lee</p>
+        <h2 id="status-key-title">Tres estados con significado</h2>
+      </header>
+      <dl>
+        <div>
+          <dt>Iniciada</dt><dd>
+            Ya dejaste una respuesta, una pista usada o una nota. Existe una huella de trabajo.
+          </dd>
+        </div>
+        <div>
+          <dt>Completada</dt><dd>
+            Cerraste las actividades requeridas y registraste una explicación propia.
+          </dd>
+        </div>
+        <div>
+          <dt>Retenida</dt><dd>
+            Superaste la secuencia de repasos sin necesitar abrir la solución antes de responder.
+          </dd>
+        </div>
+      </dl>
+    </section>
+
+    <section class="evidence" aria-labelledby="evidence-title">
+      <div>
+        <p class="eyebrow">Criterio de cierre</p>
+        <h2 id="evidence-title">Seis rastros que sí importan</h2>
+      </div>
+      <ol>
+        <li>
+          <span>P</span><p>
+            <strong>Predice:</strong> anticipaste qué ocurriría y explicaste por qué.
+          </p>
+        </li>
+        <li>
+          <span>E</span><p>
+            <strong>Escribe:</strong> ejecutaste una variación mínima en tu laboratorio local.
+          </p>
+        </li>
+        <li>
+          <span>N</span><p>
+            <strong>Nombra:</strong> describiste la diferencia o el fallo con vocabulario preciso.
+          </p>
+        </li>
+        <li>
+          <span>S</span><p>
+            <strong>Sustenta:</strong> contrastaste tu explicación con una fuente oficial.
+          </p>
+        </li>
+        <li>
+          <span>A</span><p>
+            <strong>Argumenta:</strong> defendiste una decisión y reconociste su costo.
+          </p>
+        </li>
+        <li>
+          <span>R</span><p>
+            <strong>Reaplica:</strong> transferiste la idea a un caso que no habías visto.
+          </p>
+        </li>
+      </ol>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .page-head {
+    display: grid;
+    gap: var(--space-md);
+    padding-block: var(--space-2xl);
+  }
+
+  .page-head h1 {
+    max-width: 12ch;
+  }
+
+  .page-head p:last-child {
+    max-width: 60ch;
+    font-size: var(--text-md);
+  }
+
+  .progress-shell,
+  .status-key,
+  .evidence {
+    display: grid;
+    gap: var(--space-2xl);
+  }
+
+  .progress-shell {
+    padding-block-end: var(--space-3xl);
+  }
+
+  .no-script {
+    padding: var(--space-md);
+  }
+
+  .status-key {
+    padding-block: var(--space-xl);
+    border-block: var(--rule-strong) solid var(--color-ink);
+  }
+
+  .status-key header,
+  .evidence > div {
+    display: grid;
+    gap: var(--space-xs);
+  }
+
+  .status-key dl {
+    display: grid;
+    margin: 0;
+    border-block-start: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .status-key dl div {
+    display: grid;
+    gap: var(--space-xs);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .status-key dt {
+    font-family: var(--font-display);
+    font-size: var(--text-lg);
+    font-weight: 700;
+  }
+
+  .status-key dd {
+    margin: 0;
+    color: var(--color-ink-muted);
+  }
+
+  .evidence ol {
+    display: grid;
+    margin: 0;
+    padding: 0;
+    border-block-start: var(--rule-strong) solid var(--color-ink);
+    list-style: none;
+  }
+
+  .evidence li {
+    display: grid;
+    grid-template-columns: 2.5rem minmax(0, 1fr);
+    gap: var(--space-md);
+    padding-block: var(--space-md);
+    border-block-end: var(--rule-thin) solid var(--color-rule);
+  }
+
+  .evidence li span {
+    display: grid;
+    width: 2.2rem;
+    aspect-ratio: 1;
+    place-items: center;
+    border: var(--rule-strong) solid var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+    font-family: var(--font-mono);
+    font-weight: 700;
+  }
+
+  @media (min-width: 48rem) {
+    .status-key {
+      grid-template-columns: minmax(15rem, 0.65fr) minmax(0, 1.35fr);
+    }
+
+    .status-key dl div {
+      grid-template-columns: 9rem minmax(0, 1fr);
+    }
+
+    .evidence {
+      grid-template-columns: minmax(15rem, 0.65fr) minmax(0, 1.35fr);
+      align-items: start;
+    }
+  }
+</style>
