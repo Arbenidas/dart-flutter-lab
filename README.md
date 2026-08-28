@@ -13,7 +13,7 @@ Plataforma de estudio y laboratorios locales para aprender programación desde c
 ```text
 flutter-lab/
 ├── .fvmrc              # Flutter 3.47.1 (incluye Dart 3.13)
-├── METODO.md           # ciclo PENSAR y reglas de práctica
+├── METODO.md           # ciclo de evidencia, escalera de repaso y reglas de práctica
 ├── docs/               # guía curricular para contribuir contenido
 ├── tool/preflight.sh   # comprueba FVM y las versiones requeridas
 ├── platform/           # plataforma Astro, progreso local y contenido
@@ -84,8 +84,8 @@ fvm dart run bin/m01_hola.dart
 ./lab status
 ```
 
-`m01_hola.dart` corresponde a D00 y no tiene tests. A partir de D01,
-`./lab next` ejecuta solo el siguiente ejercicio pendiente. Los `TODO` y sus
+`m01_hola.dart` corresponde a D00 y no tiene tests. A partir de D01 hay 76 ejercicios repartidos en
+`m02`–`m16`, uno por lección; `./lab next` ejecuta solo el siguiente pendiente. Los `TODO` y sus
 tests fallidos son el punto de partida, no un fallo del repositorio. Cuando
 completes todo:
 
@@ -117,7 +117,19 @@ fvm flutter build web --release
 
 ## Método de trabajo
 
-Cada práctica sigue PENSAR: **Predice, Escribe, Nombra, Sustenta, Argumenta y Reaplica**. Lee [METODO.md](METODO.md) antes de pedir una solución completa. La documentación oficial de partida está en [dart.dev](https://dart.dev/), [api.dart.dev](https://api.dart.dev/), [docs.flutter.dev](https://docs.flutter.dev/) y [api.flutter.dev](https://api.flutter.dev/).
+Cada práctica recorre el **ciclo de evidencia**, cuatro movimientos ordenados de la prueba más débil
+a la más fuerte:
+
+| Movimiento    | La pregunta                         | Quién lo verifica |
+| ------------- | ----------------------------------- | ----------------- |
+| **Intento**   | ¿Qué escribes sin mirar nada?       | tú                |
+| **Evidencia** | ¿Qué respondió la máquina?          | la máquina        |
+| **Fuente**    | ¿Qué dice la documentación oficial? | el enlace oficial |
+| **Criterio**  | ¿Qué decides y qué costo aceptas?   | tú, y el repaso   |
+
+La reaplicación no cabe en la misma sesión: se mide en la escalera de repaso a 1, 3, 7 y 21 días
+(recordar, reescribir, explicar, transferir), que la plataforma programa sola al confirmar una
+lección. Lee [METODO.md](METODO.md) antes de pedir una solución completa. La documentación oficial de partida está en [dart.dev](https://dart.dev/), [api.dart.dev](https://api.dart.dev/), [docs.flutter.dev](https://docs.flutter.dev/) y [api.flutter.dev](https://api.flutter.dev/).
 
 ## Contribuir
 

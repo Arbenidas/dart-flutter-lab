@@ -6,11 +6,11 @@
   "title": "Funciones que expresan intención",
   "summary": "Diseña firmas legibles y usa funciones como valores sin perder claridad.",
   "status": "available",
-  "estimatedHours": 6,
+  "estimatedHours": 4.5,
   "prerequisites": ["D03"],
   "outcomes": [
     "Diseñar parámetros y retornos que hagan explícito el contrato.",
     "Explicar closures, callbacks y funciones de orden superior."
   ],
-  "lessonIds": ["D04-L01"]
+  "lessonIds": ["D04-L01", "D04-L02", "D04-L03", "D04-L04", "D04-L05", "D04-L06"]
 }

@@ -1,78 +1,119 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
 
-const steps = [
+const movements = [
   {
-    letter: 'P',
-    verb: 'Predice',
-    question: '¿Qué crees que ocurrirá y por qué?',
-    action: 'Deja una respuesta antes de ejecutar. Una predicción hace visible tu modelo mental.',
-  },
-  {
-    letter: 'E',
-    verb: 'Escribe',
-    question: '¿Cuál es el experimento mínimo?',
-    action: 'Cambia una sola variable, ejecuta en local y conserva la salida o el error.',
-  },
-  {
-    letter: 'N',
-    verb: 'Nombra',
-    question: '¿Dónde difieren tu idea y la evidencia?',
-    action: 'Describe la causa con vocabulario del lenguaje, no con “funciona” o “no funciona”.',
-  },
-  {
-    letter: 'S',
-    verb: 'Sustenta',
-    question: '¿Qué contrato oficial respalda la explicación?',
-    action: 'Busca una guía o referencia API y conecta una afirmación concreta con tu resultado.',
-  },
-  {
-    letter: 'A',
-    verb: 'Argumenta',
-    question: '¿Qué decisión tomarías y qué costo aceptas?',
+    name: 'Intento',
+    question: '¿Qué escribes sin mirar nada?',
+    artifact: 'Tu código o tu predicción, aunque falle.',
     action:
-      'Compara al menos dos opciones. La arquitectura empieza cuando puedes defender un límite.',
+      'Empieza en una página en blanco. El intento fallido abre el hueco donde después entra la información; leer primero se siente mejor y enseña menos.',
+    evidence: 'Lo verificas tú',
   },
   {
-    letter: 'R',
-    verb: 'Reaplica',
-    question: '¿Puedes usar la idea en un caso distinto?',
-    action: 'Resuelve una variación sin copiar el ejemplo y programa el próximo repaso.',
+    name: 'Evidencia',
+    question: '¿Qué respondió la máquina?',
+    artifact: 'La salida, el error o el resultado del test, exactos.',
+    action:
+      'Ejecuta y copia lo que dijo la herramienta, no tu resumen de lo que dijo. Es la única prueba de esta lista que no depende de tu opinión.',
+    evidence: 'Lo verifica la máquina',
+  },
+  {
+    name: 'Fuente',
+    question: '¿Qué dice la documentación oficial?',
+    artifact: 'Un encabezado citado y su regla parafraseada.',
+    action:
+      'Llega con una pregunta concreta, localiza el encabezado que la responde y ciérralo antes de explicarla. «Lee toda la página» no es una instrucción.',
+    evidence: 'Lo verifica el enlace',
+  },
+  {
+    name: 'Criterio',
+    question: '¿Qué decides y qué costo aceptas?',
+    artifact: 'Dos opciones comparadas y una descartada con motivo.',
+    action:
+      'Una decisión sin alternativa descartada todavía no es criterio. La arquitectura empieza cuando puedes defender un límite.',
+    evidence: 'Lo verifica el repaso',
+  },
+] as const;
+
+const ladder = [
+  { day: 'Día 1', verb: 'Recordar', action: 'Responde la pregunta central sin abrir nada.' },
+  {
+    day: 'Día 3',
+    verb: 'Reescribir',
+    action: 'Vuelve a escribir el ejercicio en un archivo vacío.',
+  },
+  { day: 'Día 7', verb: 'Explicar', action: 'Cuéntaselo en voz alta a alguien, sin apuntes.' },
+  {
+    day: 'Día 21',
+    verb: 'Transferir',
+    action: 'Aplica la idea a un problema que no habías visto.',
   },
 ] as const;
 ---
 
 <BaseLayout
-  title="Método PENSAR"
-  description="Método socrático PENSAR para aprender programación con evidencia, documentación y transferencia."
+  title="Ciclo de evidencia"
+  description="El ciclo de evidencia: intento, evidencia, fuente y criterio, más una escalera de repaso a 1, 3, 7 y 21 días."
 >
   <div data-pagefind-body>
     <header class="page-head container">
-      <p class="eyebrow">Método PENSAR</p>
+      <p class="eyebrow">Ciclo de evidencia</p>
       <h1>La respuesta llega después del razonamiento.</h1>
       <p>
-        Seis movimientos convierten una explicación en una habilidad: predice, escribe, nombra,
-        sustenta, argumenta y reaplica.
+        Cuatro movimientos ordenados de la prueba más débil a la más fuerte: intento, evidencia,
+        fuente y criterio. Cada uno produce un artefacto de tipo distinto, así que ninguno se puede
+        rellenar con el anterior.
       </p>
     </header>
 
     <section class="method-sequence container" aria-labelledby="sequence-title">
       <header>
-        <p class="eyebrow">Un ciclo, no seis casillas</p>
-        <h2 id="sequence-title">Cada paso produce evidencia para el siguiente</h2>
+        <p class="eyebrow">Un ciclo, no una lista de casillas</p>
+        <h2 id="sequence-title">Cada movimiento deja una prueba diferente</h2>
       </header>
       <ol>
         {
-          steps.map((step, index) => (
+          movements.map((movement, index) => (
             <li>
               <div class="method-letter" aria-hidden="true">
-                {step.letter}
+                {index + 1}
               </div>
               <div class="method-copy">
-                <span>{String(index + 1).padStart(2, '0')}</span>
-                <h3>{step.verb}</h3>
-                <p class="method-question">{step.question}</p>
-                <p>{step.action}</p>
+                <span>{movement.evidence}</span>
+                <h3>{movement.name}</h3>
+                <p class="method-question">{movement.question}</p>
+                <p>
+                  {movement.action} <strong>Artefacto:</strong> {movement.artifact}
+                </p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+    </section>
+
+    <section class="method-sequence container" aria-labelledby="ladder-title">
+      <header>
+        <p class="eyebrow">El movimiento que ocurre después</p>
+        <h2 id="ladder-title">La reaplicación no cabe en la misma sesión</h2>
+        <p>
+          Reaplicar algo el mismo día que lo aprendiste sigue siendo reconocimiento. Por eso el
+          ciclo se cierra días más tarde, y cada etapa pide algo más exigente que la anterior.
+        </p>
+      </header>
+      <ol>
+        {
+          ladder.map((stage, index) => (
+            <li>
+              <div class="method-letter" aria-hidden="true">
+                {stage.day.replace('Día ', '')}
+              </div>
+              <div class="method-copy">
+                <span>Repaso {index + 1} de 4</span>
+                <h3>{stage.verb}</h3>
+                <p class="method-question">{stage.day}</p>
+                <p>{stage.action}</p>
               </div>
             </li>
           ))
@@ -97,7 +138,8 @@ const steps = [
         </ol>
         <p>
           Trabaja hasta 20 minutos con una hipótesis clara. Si sigues detenido, abre una pista y
-          registra qué dato te faltaba.
+          registra qué dato te faltaba. Después de las pistas viene la documentación oficial, nunca
+          un modelo de lenguaje.
         </p>
       </section>
 
@@ -118,8 +160,10 @@ const steps = [
         <h2 id="session-title">Menos contenido, más recuperación</h2>
       </div>
       <dl>
-        <div><dt>20 min</dt><dd>Repasa de memoria y corrige una explicación anterior.</dd></div>
-        <div><dt>30 min</dt><dd>Trabaja una idea nueva con el ciclo PENSAR completo.</dd></div>
+        <div><dt>20 min</dt><dd>Atiende la escalera de repaso vencida, de memoria.</dd></div>
+        <div>
+          <dt>30 min</dt><dd>Trabaja una lección nueva con el ciclo de evidencia completo.</dd>
+        </div>
         <div>
           <dt>10 min</dt><dd>Escribe una nota propia y prepara el siguiente punto de entrada.</dd>
         </div>

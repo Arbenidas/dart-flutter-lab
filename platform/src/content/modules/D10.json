@@ -6,11 +6,11 @@
   "title": "Futures, async/await y Streams",
   "summary": "Razona sobre operaciones que terminan después y secuencias de eventos en el tiempo.",
   "status": "available",
-  "estimatedHours": 9,
+  "estimatedHours": 3.5,
   "prerequisites": ["D09"],
   "outcomes": [
     "Componer Futures con manejo explícito de errores.",
     "Elegir Stream solo cuando el dato sea una secuencia temporal."
   ],
-  "lessonIds": ["D10-L01"]
+  "lessonIds": ["D10-L01", "D10-L02", "D10-L03", "D10-L04"]
 }

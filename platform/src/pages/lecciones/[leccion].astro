@@ -46,10 +46,19 @@ const lessonLab = lesson.data.lab
       targetPath: lesson.data.lab.targetPath,
       testCommand: lesson.data.lab.testCommand,
       analyzeCommand: lesson.data.lab.analyzeCommand,
+      revealReference: lesson.data.lab.revealReference,
       ...(lesson.data.lab.exerciseId ? { exerciseId: lesson.data.lab.exerciseId } : {}),
     }
   : undefined;
-const canonicalReference = await loadCanonicalReference(lessonLab);
+// La solución canónica solo se revela en la lección que cierra el módulo; de lo contrario una
+// lección temprana filtraría las respuestas de las siguientes que apuntan al mismo archivo.
+const canonicalReference = lessonLab?.revealReference
+  ? await loadCanonicalReference(lessonLab)
+  : undefined;
+const lessonDocRefs = lesson.data.docRefs.map((docRef) => ({
+  label: docRef.label,
+  url: docRef.url,
+}));
 const { Content, headings } = await render(lesson);
 const sectionHeadings = headings.filter((heading) => heading.depth === 2);
 const verifiedDate = new Intl.DateTimeFormat('es-419', {
@@ -129,10 +138,19 @@ const verifiedDate = new Intl.DateTimeFormat('es-419', {
         </div>
 
         <section class="review-prompts" aria-labelledby="review-title">
-          <p class="eyebrow">Cuatro recuperaciones</p>
-          <h2 id="review-title">Preguntas para volver sin mirar</h2>
-          <ol>
-            {lesson.data.reviewPrompts.map((prompt) => <li>{prompt}</li>)}
+          <p class="eyebrow">Escalera de repaso</p>
+          <h2 id="review-title">Lo que vuelve en días 1, 3, 7 y 21</h2>
+          <ol class="review-ladder">
+            {
+              lesson.data.reviewPrompts.map((prompt, index) => (
+                <li>
+                  <span class="review-ladder__stage">
+                    {`Día ${[1, 3, 7, 21][index]} · ${['recordar', 'reescribir', 'explicar', 'transferir'][index]}`}
+                  </span>
+                  {prompt}
+                </li>
+              ))
+            }
           </ol>
         </section>
 
@@ -141,11 +159,16 @@ const verifiedDate = new Intl.DateTimeFormat('es-419', {
             <LessonPractice
               lessonId={lesson.data.id}
               activities={lesson.data.activities}
+              docRefs={lessonDocRefs}
               lab={lessonLab}
               reference={canonicalReference}
             />
           ) : (
-            <LessonPractice lessonId={lesson.data.id} activities={lesson.data.activities} />
+            <LessonPractice
+              lessonId={lesson.data.id}
+              activities={lesson.data.activities}
+              docRefs={lessonDocRefs}
+            />
           )
         }
       </article>
@@ -334,6 +357,16 @@ const verifiedDate = new Intl.DateTimeFormat('es-419', {
 
   .review-prompts li {
     padding-inline-start: var(--space-xs);
+  }
+
+  .review-ladder__stage {
+    display: block;
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
   }
 
   .lesson-aside {

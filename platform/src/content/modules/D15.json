@@ -6,11 +6,11 @@
   "title": "Proyecto final Dart",
   "summary": "Integra lenguaje, datos, asincronía y pruebas en una herramienta mantenible.",
   "status": "available",
-  "estimatedHours": 18,
+  "estimatedHours": 4.75,
   "prerequisites": ["D14"],
   "outcomes": [
     "Diseñar un proyecto desde criterios de aceptación hasta entrega.",
     "Defender decisiones de estructura, manejo de errores y pruebas."
   ],
-  "lessonIds": ["D15-L01"]
+  "lessonIds": ["D15-L01", "D15-L02", "D15-L03", "D15-L04", "D15-L05"]
 }

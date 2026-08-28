@@ -6,11 +6,11 @@
   "title": "Clases, objetos e invariantes",
   "summary": "Encapsula estado válido con constructores, métodos y objetos inmutables.",
   "status": "available",
-  "estimatedHours": 7,
+  "estimatedHours": 4.5,
   "prerequisites": ["D05"],
   "outcomes": [
     "Diseñar clases pequeñas con responsabilidades claras.",
     "Proteger invariantes desde la construcción del objeto."
   ],
-  "lessonIds": ["D06-L01"]
+  "lessonIds": ["D06-L01", "D06-L02", "D06-L03", "D06-L04", "D06-L05"]
 }

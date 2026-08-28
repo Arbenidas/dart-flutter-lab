@@ -6,11 +6,11 @@
   "title": "Modelado moderno con Dart",
   "summary": "Combina genéricos, enums, records, sealed classes y patterns para estados completos.",
   "status": "available",
-  "estimatedHours": 8,
+  "estimatedHours": 4.25,
   "prerequisites": ["D07"],
   "outcomes": [
     "Representar estados imposibles de confundir.",
     "Diseñar APIs genéricas sin perder seguridad de tipos."
   ],
-  "lessonIds": ["D08-L01"]
+  "lessonIds": ["D08-L01", "D08-L02", "D08-L03", "D08-L04", "D08-L05"]
 }

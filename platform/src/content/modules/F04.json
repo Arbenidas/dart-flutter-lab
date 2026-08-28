@@ -6,11 +6,11 @@
   "title": "Datos, red y persistencia",
   "summary": "Conecta la UI con fuentes externas mediante estados explícitos y límites claros.",
   "status": "available",
-  "estimatedHours": 11,
+  "estimatedHours": 3.5,
   "prerequisites": ["F03"],
   "outcomes": [
     "Representar loading, data, empty y error sin banderas contradictorias.",
     "Separar serialización, acceso a datos y presentación."
   ],
-  "lessonIds": ["F04-L01"]
+  "lessonIds": ["F04-L01", "F04-L02", "F04-L03", "F04-L04"]
 }

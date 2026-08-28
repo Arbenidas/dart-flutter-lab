@@ -6,11 +6,11 @@
   "title": "Constraints, layout y responsive",
   "summary": "Construye interfaces que negocian espacio en lugar de depender de tamaños mágicos.",
   "status": "available",
-  "estimatedHours": 9,
+  "estimatedHours": 3.75,
   "prerequisites": ["F00"],
   "outcomes": [
     "Explicar el flujo constraints down, sizes up, parents set positions.",
     "Adaptar una composición con LayoutBuilder sin duplicar pantallas."
   ],
-  "lessonIds": ["F01-L01"]
+  "lessonIds": ["F01-L01", "F01-L02", "F01-L03", "F01-L04"]
 }

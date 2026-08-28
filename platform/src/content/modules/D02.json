@@ -6,11 +6,11 @@
   "title": "Null safety como contrato",
   "summary": "Modela ausencia de datos y deja que el compilador pruebe tus supuestos.",
   "status": "available",
-  "estimatedHours": 5,
+  "estimatedHours": 4.0,
   "prerequisites": ["D01"],
   "outcomes": [
     "Distinguir tipos anulables y no anulables.",
     "Resolver ausencia esperada sin abusar del operador de aserción."
   ],
-  "lessonIds": ["D02-L01"]
+  "lessonIds": ["D02-L01", "D02-L02", "D02-L03", "D02-L04", "D02-L05"]
 }

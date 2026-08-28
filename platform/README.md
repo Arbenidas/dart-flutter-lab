@@ -21,7 +21,7 @@ npx playwright install chromium firefox webkit
 
 La matriz cubre Chromium, Firefox, WebKit, anchos de 375/768/1440 px, deep links, 404, funcionamiento de lectura sin JavaScript, descarga del starter y violaciones WCAG serias/críticas.
 
-El validador independiente comprueba IDs, slugs, orden, pertenencia entre rutas/módulos/lecciones, ciclos de prerrequisitos, las seis actividades PENSAR, fuentes oficiales, comandos FVM compatibles con cada workspace y targets locales. Un target inexistente bloquea un módulo `available`; en `preview` o `roadmap` solo produce una advertencia.
+El validador independiente comprueba IDs, slugs, orden, pertenencia entre rutas/módulos/lecciones, ciclos de prerrequisitos, los movimientos que exige el `kind` de cada lección, el presupuesto de minutos por sesión, fuentes oficiales, comandos FVM compatibles con cada workspace y targets locales. Un target inexistente bloquea un módulo `available`; en `preview` o `roadmap` solo produce una advertencia.
 
 ## Artefactos
 

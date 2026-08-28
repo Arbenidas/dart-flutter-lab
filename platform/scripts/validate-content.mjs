@@ -10,7 +10,21 @@ const repositoryDirectory = resolve(platformDirectory, '..');
 const contentDirectory = join(platformDirectory, 'src', 'content');
 const moduleIdPattern = /^(D(?:0[0-9]|1[0-5])|F0[0-6])$/;
 const lessonIdPattern = /^(D(?:0[0-9]|1[0-5])|F0[0-6])-L\d{2}$/;
-const activityKinds = new Set(['predict', 'code', 'debug', 'explain', 'transfer', 'docs']);
+const activityKinds = new Set(['attempt', 'evidence', 'source', 'judgment']);
+const lessonKinds = new Set(['concepto', 'taller', 'proyecto']);
+const requiredMovements = {
+  taller: ['attempt', 'evidence', 'source', 'judgment'],
+  concepto: ['attempt', 'source', 'judgment'],
+  proyecto: ['attempt', 'evidence', 'judgment'],
+};
+const lessonKindsThatNeedLab = new Set(['taller', 'proyecto']);
+const sessionMinuteBudget = 90;
+const movementLabels = {
+  attempt: 'Intento',
+  evidence: 'Evidencia',
+  source: 'Fuente',
+  judgment: 'Criterio',
+};
 const officialDocumentationHosts = new Set([
   'api.dart.dev',
   'api.flutter.dev',
@@ -158,18 +172,47 @@ async function validateLessonDetails(lessons, modulesById) {
     const activities = asArray(data.activities);
     const seenKinds = new Set(activities.map((activity) => activity?.kind));
     const activityIds = activities.map((activity) => activity?.id).filter(hasText);
-    if (activities.length < 6) report(errors, file, 'se requieren al menos seis actividades');
+    const docRefLabels = new Set(asArray(data.docRefs).map((docRef) => docRef?.label));
+    if (!lessonKinds.has(data.kind)) {
+      report(errors, file, `«kind» debe ser concepto, taller o proyecto (recibido: ${data.kind})`);
+    }
+    if (activities.length < 4) report(errors, file, 'se requieren al menos cuatro actividades');
+    if (activities.length > 8)
+      report(errors, file, 'más de ocho actividades convierten la lección en un monolito');
     if (!uniqueValues(activityIds))
       report(errors, file, 'hay identificadores de actividad duplicados');
-    for (const kind of activityKinds) {
+    for (const kind of requiredMovements[data.kind] ?? []) {
       if (!seenKinds.has(kind))
-        report(errors, file, `falta una actividad «${kind}» del ciclo PENSAR`);
+        report(
+          errors,
+          file,
+          `una lección «${data.kind}» necesita el movimiento «${movementLabels[kind]}» (${kind})`,
+        );
     }
     for (const activity of activities) {
       if (!activity || !hasText(activity.id) || !hasText(activity.prompt))
         report(errors, file, 'cada actividad necesita id y prompt');
+      if (activity?.kind && !activityKinds.has(activity.kind))
+        report(errors, file, `movimiento desconocido «${activity.kind}» en ${activity?.id}`);
       if (asArray(activity?.hints).length > 3)
         report(errors, file, `la actividad ${activity?.id ?? '(sin id)'} supera tres pistas`);
+      if (hasText(activity?.sourceLabel)) {
+        if (activity.kind !== 'source')
+          report(errors, file, `sourceLabel solo aplica al movimiento Fuente (${activity.id})`);
+        else if (!docRefLabels.has(activity.sourceLabel))
+          report(
+            errors,
+            file,
+            `${activity.id}: sourceLabel «${activity.sourceLabel}» no coincide con ningún docRefs`,
+          );
+      }
+    }
+    if (Number.isFinite(data.estimatedMinutes) && data.estimatedMinutes > sessionMinuteBudget) {
+      report(
+        errors,
+        file,
+        `estimatedMinutes ${data.estimatedMinutes} supera el presupuesto de ${sessionMinuteBudget} min; parte la lección`,
+      );
     }
     if (asArray(data.reviewPrompts).length !== 4)
       report(errors, file, 'reviewPrompts debe contener exactamente cuatro preguntas');
@@ -189,7 +232,11 @@ async function validateLessonDetails(lessons, modulesById) {
         report(errors, file, `${label}: lastVerified debe usar YYYY-MM-DD`);
     }
 
-    if (!data.lab) continue;
+    if (!data.lab) {
+      if (lessonKindsThatNeedLab.has(data.kind))
+        report(errors, file, `una lección «${data.kind}» necesita declarar «lab»`);
+      continue;
+    }
     if (!['dart_lab', 'flutter_lab'].includes(data.lab.workspace)) {
       report(errors, file, `workspace de laboratorio no permitido: ${data.lab.workspace}`);
       continue;
@@ -312,6 +359,28 @@ async function main() {
     if (!uniqueValues(lessonIds)) report(errors, file, 'lessonIds contiene duplicados');
     if (data.status === 'available' && lessonIds.length === 0)
       report(errors, file, 'un módulo disponible necesita al menos una lección');
+    if (data.status === 'available' && data.estimatedHours > 2 && lessonIds.length < 2) {
+      report(
+        errors,
+        file,
+        `${data.estimatedHours} h en una sola lección; parte el módulo en unidades de una sesión`,
+      );
+    }
+    const declaredMinutes = lessonIds
+      .map((lessonId) => lessonsById.get(lessonId)?.data.estimatedMinutes)
+      .filter(Number.isFinite)
+      .reduce((total, minutes) => total + minutes, 0);
+    const budgetedMinutes = data.estimatedHours * 60;
+    if (
+      declaredMinutes > 0 &&
+      Math.abs(declaredMinutes - budgetedMinutes) > budgetedMinutes * 0.25
+    ) {
+      report(
+        warnings,
+        file,
+        `sus lecciones suman ${declaredMinutes} min y el módulo declara ${budgetedMinutes} min`,
+      );
+    }
     for (const lessonId of lessonIds) {
       const lesson = lessonsById.get(lessonId);
       if (!lesson) report(errors, file, `referencia una lección inexistente: ${lessonId}`);
@@ -356,9 +425,19 @@ async function main() {
     process.exitCode = 1;
     return;
   }
+  const pendingSplit = modules.filter(
+    (module) => Number(module.data.estimatedHours) > 2 && asArray(module.data.lessonIds).length < 2,
+  );
   console.log(
     `Contenido válido: ${tracks.length} rutas, ${modules.length} módulos y ${lessons.length} lecciones (${warnings.length} advertencia(s)).`,
   );
+  if (pendingSplit.length > 0) {
+    console.log(
+      `Pendientes de partir en lecciones de una sesión: ${pendingSplit
+        .map((module) => module.data.id)
+        .join(', ')}.`,
+    );
+  }
 }
 
 await main();

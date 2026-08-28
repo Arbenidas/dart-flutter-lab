@@ -140,5 +140,6 @@ export function lessonClientCatalog(lessons: LessonEntry[]) {
     slug: lesson.data.slug,
     moduleId: lesson.data.moduleId,
     href: lessonHref(lesson),
+    reviewPrompts: lesson.data.reviewPrompts,
   }));
 }

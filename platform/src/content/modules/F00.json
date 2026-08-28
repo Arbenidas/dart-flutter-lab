@@ -6,11 +6,11 @@
   "title": "El modelo declarativo de widgets",
   "summary": "Entiende Widget, Element y build antes de diseñar tu primera interfaz.",
   "status": "available",
-  "estimatedHours": 6,
+  "estimatedHours": 3.5,
   "prerequisites": ["D04"],
   "outcomes": [
     "Construir un StatelessWidget configurable y componible.",
     "Explicar por qué los widgets son descripciones inmutables."
   ],
-  "lessonIds": ["F00-L01"]
+  "lessonIds": ["F00-L01", "F00-L02", "F00-L03", "F00-L04"]
 }
