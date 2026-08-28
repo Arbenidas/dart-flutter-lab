@@ -6,11 +6,11 @@
   "title": "Abstracción y composición",
   "summary": "Usa interfaces, herencia, mixins y extensiones con criterios explícitos.",
   "status": "available",
-  "estimatedHours": 7,
+  "estimatedHours": 4.25,
   "prerequisites": ["D06"],
   "outcomes": [
     "Preferir composición cuando la relación no sea realmente de subtipo.",
     "Crear contratos intercambiables y fáciles de probar."
   ],
-  "lessonIds": ["D07-L01"]
+  "lessonIds": ["D07-L01", "D07-L02", "D07-L03", "D07-L04", "D07-L05"]
 }

@@ -4,6 +4,7 @@ interface LessonItem {
   title: string;
   href: string;
   moduleId: string;
+  reviewPrompts: string[];
 }
 
 interface Props {
@@ -18,8 +19,8 @@ const { lessons } = Astro.props;
     <p class="eyebrow">Recuperación activa</p>
     <h2>Explica antes de mirar</h2>
     <p>
-      Abre una pregunta, responde de memoria y registra si necesitaste ayuda. Fallar no borra nada:
-      mueve el mismo repaso a mañana.
+      Cada etapa pide algo distinto: recordar al día 1, reescribir al día 3, explicar al día 7 y
+      transferir al día 21. Fallar no borra nada: mueve el mismo repaso a mañana.
     </p>
   </div>
   <div class="review-list" data-review-list>
@@ -43,7 +44,14 @@ const { lessons } = Astro.props;
       id: string;
       title: string;
       href: string;
+      reviewPrompts?: string[];
     }>;
+    const stageLabels = [
+      'Día 1 · recordar',
+      'Día 3 · reescribir',
+      'Día 7 · explicar',
+      'Día 21 · transferir',
+    ];
     const byId = new Map(lessons.map((lesson) => [lesson.id, lesson]));
     const repository = await createProgressRepository(SITE.contentVersion);
     const warning = root.querySelector<HTMLElement>('[data-storage-warning]');
@@ -66,14 +74,16 @@ const { lessons } = Astro.props;
           const lesson = byId.get(progress.lessonId);
           const article = document.createElement('article');
           article.className = 'review-card panel';
-          const stage = (progress.review?.stage ?? 0) + 1;
+          const stageIndex = progress.review?.stage ?? 0;
+          const stage = stageIndex + 1;
           const title = document.createElement('h3');
           title.textContent = lesson?.title ?? progress.lessonId;
           const meta = document.createElement('p');
           meta.className = 'review-card__meta';
-          meta.textContent = `Repaso ${stage} de 4 · responde sin abrir la lección`;
+          meta.textContent = `Repaso ${stage} de 4 · ${stageLabels[stageIndex] ?? ''} · responde sin abrir la lección`;
           const prompt = document.createElement('p');
           prompt.textContent =
+            lesson?.reviewPrompts?.[stageIndex] ??
             'Explica el concepto central, un error común y un caso donde lo reaplicarías.';
           const actions = document.createElement('div');
           actions.className = 'review-card__actions';

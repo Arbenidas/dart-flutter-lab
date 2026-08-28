@@ -6,11 +6,11 @@
   "title": "MVVM feature-first con Riverpod",
   "summary": "Separa vista, estado y datos con límites que puedas probar y sustituir sin reescribir la feature.",
   "status": "available",
-  "estimatedHours": 11,
+  "estimatedHours": 4.75,
   "prerequisites": ["F04"],
   "outcomes": [
     "Asignar responsabilidades a View, ViewModel, Repository y Service.",
     "Gestionar estado inmutable con Riverpod Notifier e inyectar repositorios por provider."
   ],
-  "lessonIds": ["F05-L01"]
+  "lessonIds": ["F05-L01", "F05-L02", "F05-L03", "F05-L04", "F05-L05"]
 }

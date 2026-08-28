@@ -6,11 +6,11 @@
   "title": "Navegación, formularios y accesibilidad",
   "summary": "Diseña flujos completos que también funcionan con teclado, lector de pantalla y errores reales.",
   "status": "available",
-  "estimatedHours": 10,
+  "estimatedHours": 2.75,
   "prerequisites": ["F02"],
   "outcomes": [
     "Modelar rutas y validación sin crear callejones sin salida.",
     "Construir semántica, foco y feedback que no dependan solo del color."
   ],
-  "lessonIds": ["F03-L01"]
+  "lessonIds": ["F03-L01", "F03-L02", "F03-L03"]
 }

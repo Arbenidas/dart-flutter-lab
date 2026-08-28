@@ -110,6 +110,258 @@ const List<_Exercise> _exercises = <_Exercise>[
     'test/m05_funciones_test.dart',
     checksStructure: true,
   ),
+
+  _Exercise(
+    'm06-1',
+    'Colecciones: filtrar y materializar',
+    'test/m06_colecciones_test.dart',
+  ),
+  _Exercise(
+    'm06-2',
+    'Sets: normalizar y deduplicar',
+    'test/m06_colecciones_test.dart',
+  ),
+  _Exercise(
+    'm06-3',
+    'Indexar con una politica de duplicados',
+    'test/m06_colecciones_test.dart',
+  ),
+  _Exercise(
+    'm06-4',
+    'Agrupar y contar por clave',
+    'test/m06_colecciones_test.dart',
+  ),
+  _Exercise(
+    'm06-5',
+    'Busqueda perezosa con corte temprano',
+    'test/m06_colecciones_test.dart',
+  ),
+  _Exercise(
+    'm07-1',
+    'Invariante validada al construir',
+    'test/m07_clases_test.dart',
+  ),
+  _Exercise(
+    'm07-2',
+    'Operacion que preserva la invariante',
+    'test/m07_clases_test.dart',
+  ),
+  _Exercise(
+    'm07-3',
+    'Constructor factory que valida',
+    'test/m07_clases_test.dart',
+  ),
+  _Exercise(
+    'm07-4',
+    'Rango de fechas con orden garantizado',
+    'test/m07_clases_test.dart',
+  ),
+  _Exercise(
+    'm07-5',
+    'Encapsular una lista mutable',
+    'test/m07_clases_test.dart',
+  ),
+  _Exercise(
+    'm08-1',
+    'Contrato Reloj y su doble',
+    'test/m08_contratos_test.dart',
+  ),
+  _Exercise(
+    'm08-2',
+    'Inyectar la fuente de tiempo',
+    'test/m08_contratos_test.dart',
+  ),
+  _Exercise(
+    'm08-3',
+    'Doble de envio en memoria',
+    'test/m08_contratos_test.dart',
+  ),
+  _Exercise('m08-4', 'Componer dos contratos', 'test/m08_contratos_test.dart'),
+  _Exercise(
+    'm08-5',
+    'Mixin que agrega registro',
+    'test/m08_contratos_test.dart',
+  ),
+  _Exercise(
+    'm09-1',
+    'Enum con datos y comportamiento',
+    'test/m09_modelado_test.dart',
+  ),
+  _Exercise(
+    'm09-2',
+    'Genericos que conservan el tipo',
+    'test/m09_modelado_test.dart',
+  ),
+  _Exercise(
+    'm09-3',
+    'Record con campos nombrados',
+    'test/m09_modelado_test.dart',
+  ),
+  _Exercise(
+    'm09-4',
+    'Tipo sellado y switch exhaustivo',
+    'test/m09_modelado_test.dart',
+  ),
+  _Exercise(
+    'm09-5',
+    'Validacion que acumula problemas',
+    'test/m09_modelado_test.dart',
+  ),
+  _Exercise(
+    'm10-1',
+    'Excepcion de dominio propia',
+    'test/m10_errores_test.dart',
+  ),
+  _Exercise(
+    'm10-2',
+    'Traducir un fallo de formato',
+    'test/m10_errores_test.dart',
+  ),
+  _Exercise(
+    'm10-3',
+    'try, catch, finally y rethrow',
+    'test/m10_errores_test.dart',
+  ),
+  _Exercise(
+    'm10-4',
+    'Un dato malo no detiene el proceso',
+    'test/m10_errores_test.dart',
+  ),
+  _Exercise(
+    'm10-5',
+    'Mensaje seguro para el usuario',
+    'test/m10_errores_test.dart',
+  ),
+  _Exercise(
+    'm11-1',
+    'Que corre antes del primer await',
+    'test/m11_asincronia_test.dart',
+  ),
+  _Exercise('m11-2', 'Esperas en secuencia', 'test/m11_asincronia_test.dart'),
+  _Exercise(
+    'm11-3',
+    'Esperas en paralelo con Future.wait',
+    'test/m11_asincronia_test.dart',
+  ),
+  _Exercise(
+    'm11-4',
+    'Producir un stream con async*',
+    'test/m11_asincronia_test.dart',
+  ),
+  _Exercise(
+    'm11-5',
+    'Transformar y recolectar un stream',
+    'test/m11_asincronia_test.dart',
+  ),
+  _Exercise('m12-1', 'Trabajo intensivo de CPU', 'test/m12_isolates_test.dart'),
+  _Exercise(
+    'm12-2',
+    'Mover el calculo con Isolate.run',
+    'test/m12_isolates_test.dart',
+  ),
+  _Exercise(
+    'm12-3',
+    'Umbral medido, no adivinado',
+    'test/m12_isolates_test.dart',
+  ),
+  _Exercise(
+    'm12-4',
+    'Los isolates no comparten memoria',
+    'test/m12_isolates_test.dart',
+  ),
+  _Exercise(
+    'm12-5',
+    'Un ciclo sincrono bloquea su isolate',
+    'test/m12_isolates_test.dart',
+  ),
+  _Exercise(
+    'm13-1',
+    'Construir una Uri sin concatenar',
+    'test/m13_io_json_cli_test.dart',
+  ),
+  _Exercise(
+    'm13-2',
+    'JSON valido a modelo tipado',
+    'test/m13_io_json_cli_test.dart',
+  ),
+  _Exercise(
+    'm13-3',
+    'Distinguir sintaxis, forma y dominio',
+    'test/m13_io_json_cli_test.dart',
+  ),
+  _Exercise(
+    'm13-4',
+    'Interpretar argumentos de CLI',
+    'test/m13_io_json_cli_test.dart',
+  ),
+  _Exercise(
+    'm14-1',
+    'Parsear una version semantica',
+    'test/m14_paquetes_test.dart',
+  ),
+  _Exercise(
+    'm14-2',
+    'Comparar versiones por precedencia',
+    'test/m14_paquetes_test.dart',
+  ),
+  _Exercise(
+    'm14-3',
+    'Restriccion caret sobre base estable',
+    'test/m14_paquetes_test.dart',
+  ),
+  _Exercise(
+    'm14-4',
+    'Restriccion caret sobre base 0.x',
+    'test/m14_paquetes_test.dart',
+  ),
+  _Exercise(
+    'm14-5',
+    'Superficie publica de un paquete',
+    'test/m14_paquetes_test.dart',
+  ),
+  _Exercise('m15-1', 'Repositorio en memoria', 'test/m15_calidad_test.dart'),
+  _Exercise(
+    'm15-2',
+    'Servicio que valida antes de guardar',
+    'test/m15_calidad_test.dart',
+  ),
+  _Exercise('m15-3', 'Operacion idempotente', 'test/m15_calidad_test.dart'),
+  _Exercise(
+    'm15-4',
+    'Resumen en una sola pasada',
+    'test/m15_calidad_test.dart',
+  ),
+  _Exercise(
+    'm15-5',
+    'Doble que falla para probar el error',
+    'test/m15_calidad_test.dart',
+  ),
+  _Exercise(
+    'm16-1',
+    'Nota: ida y vuelta a JSON',
+    'test/m16_bitacora_test.dart',
+  ),
+  _Exercise(
+    'm16-2',
+    'Vacio no es lo mismo que corrupto',
+    'test/m16_bitacora_test.dart',
+  ),
+  _Exercise(
+    'm16-3',
+    'Guardar declarando el esquema',
+    'test/m16_bitacora_test.dart',
+  ),
+  _Exercise(
+    'm16-4',
+    'Reglas de creacion de una nota',
+    'test/m16_bitacora_test.dart',
+  ),
+  _Exercise('m16-5', 'Completar y filtrar', 'test/m16_bitacora_test.dart'),
+  _Exercise(
+    'm16-6',
+    'Un archivo roto no se sobrescribe',
+    'test/m16_bitacora_test.dart',
+  ),
 ];
 
 Future<void> main(List<String> arguments) async {

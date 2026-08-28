@@ -6,11 +6,11 @@
   "title": "Archivos, JSON, HTTP y CLI",
   "summary": "Conecta programas Dart con archivos, procesos, argumentos y servicios web.",
   "status": "available",
-  "estimatedHours": 10,
+  "estimatedHours": 2.75,
   "prerequisites": ["D11"],
   "outcomes": [
     "Validar datos externos antes de convertirlos al dominio.",
     "Construir una herramienta CLI con entradas, salidas y códigos de error claros."
   ],
-  "lessonIds": ["D12-L01"]
+  "lessonIds": ["D12-L01", "D12-L02", "D12-L03"]
 }

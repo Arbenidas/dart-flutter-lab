@@ -24,18 +24,64 @@ La secuencia general es:
 
 Una abstracción avanzada entra cuando el estudiante ya experimentó el problema que resuelve. Clean Architecture, Riverpod o Bloc no son vocabulario inicial.
 
-## Contrato PENSAR
+## Contrato del ciclo de evidencia
 
-Toda lección contiene al menos seis actividades:
+Cada lección declara `kind` y ese `kind` decide qué movimientos son obligatorios. El objetivo es que
+el ciclo se aplique según la naturaleza del trabajo, no como ritual idéntico en las 23 lecciones.
 
-1. **Predice:** obliga a formular una hipótesis antes de ejecutar.
-2. **Escribe:** produce o modifica código local.
-3. **Nombra:** identifica el supuesto, error o regla que cambió.
-4. **Sustenta:** busca evidencia en documentación oficial.
-5. **Argumenta:** explica por qué funciona y qué alternativa descartó.
-6. **Reaplica:** usa la idea en un contexto diferente.
+| `kind`     | Movimientos obligatorios          | ¿Necesita `lab`? |
+| ---------- | --------------------------------- | ---------------- |
+| `taller`   | `attempt`, `evidence`, `source`, `judgment` | sí     |
+| `concepto` | `attempt`, `source`, `judgment`   | no               |
+| `proyecto` | `attempt`, `evidence`, `judgment` | sí               |
 
-Cada actividad puede tener como máximo tres pistas socráticas. Las pistas avanzan de pregunta diagnóstica a concepto y después a documentación o esqueleto mínimo.
+Los cuatro movimientos y lo que produce cada uno:
+
+1. **Intento** (`attempt`): obliga a escribir o predecir **antes** de leer la teoría de más abajo.
+   Debe poder responderse con la lección anterior y los objetivos; si necesita la prosa que viene
+   después, está mal ubicado y solo mide lectura.
+2. **Evidencia** (`evidence`): el estudiante ejecuta y conserva la salida exacta. Es el único
+   movimiento cuya prueba no depende de su opinión.
+3. **Fuente** (`source`): una pregunta concreta contra la documentación oficial. Puede declarar
+   `sourceLabel`, que debe coincidir con el `label` de un `docRefs` de la misma lección.
+4. **Criterio** (`judgment`): una decisión con su alternativa descartada y el costo aceptado.
+
+Cada actividad puede tener como máximo tres pistas socráticas. Las pistas avanzan de pregunta
+diagnóstica a concepto y después a documentación o esqueleto mínimo. Una lección tiene entre cuatro
+y ocho actividades: menos no cubre el ciclo, más la convierte en un monolito.
+
+**No dupliques.** El frontmatter declara las tareas; la prosa aporta el material para resolverlas.
+Los encabezados `## Intento · …`, `## Evidencia · …`, `## Fuente · …` y `## Criterio · …` explican
+cómo abordar el movimiento; no repiten el enunciado de la actividad.
+
+## Escalera de repaso
+
+`reviewPrompts` declara exactamente cuatro entradas y su **índice es la etapa**. La antigua etapa de
+transferencia vive aquí: reaplicar el mismo día sigue siendo reconocimiento.
+
+| Índice | Vence   | Verbo         | Qué debe pedir el prompt                              |
+| ------ | ------- | ------------- | ----------------------------------------------------- |
+| 0      | día 1   | recordar      | una pregunta que se responde de memoria               |
+| 1      | día 3   | reescribir    | volver a escribir el ejercicio en un archivo vacío    |
+| 2      | día 7   | explicar      | explicar en voz alta, sin apuntes                     |
+| 3      | día 21  | transferir    | aplicar la idea a un problema que no apareció         |
+
+## Tamaño de una lección
+
+Una lección es **una sesión de estudio**, no un módulo. El presupuesto es 20–90 minutos de
+`estimatedMinutes`; el validador avisa por encima de 90. Un módulo `available` de más de dos horas
+debe declarar al menos dos lecciones, y la suma de sus lecciones debe acercarse a su
+`estimatedHours`.
+
+Reglas para partir un módulo:
+
+- **Módulos con laboratorio Dart:** una lección por ejercicio de `dart_lab/tool/lab.dart`, usando su
+  id (`m02-1`) en `lab.exerciseId` y `--name m02-1` en `lab.testCommand`.
+- **Módulos sin laboratorio:** partir por unidades conceptuales que quepan en una sesión, con
+  `kind: 'concepto'`.
+- El slug existente se conserva en la primera lección del módulo, para no romper enlaces publicados.
+- Solo la lección que **cierra** el módulo lleva `lab.revealReference: true`. Sin eso, el debrief de
+  la primera lección filtraría las respuestas de todas las que apuntan al mismo archivo.
 
 ## Archivos de contenido
 
@@ -46,7 +92,7 @@ Cada actividad puede tener como máximo tres pistas socráticas. Las pistas avan
 
 Los IDs son permanentes y ASCII. No cambies un ID para corregir un título o slug. El progreso local depende de esos IDs.
 
-Una lección debe declarar cuatro repasos, referencias oficiales, objetivos verificables, prerrequisitos existentes y actividades PENSAR. Si incluye `lab`, la ruta y los comandos deben existir y usar FVM.
+Una lección debe declarar `kind`, cuatro repasos escalonados, referencias oficiales, objetivos verificables, prerrequisitos existentes y los movimientos que su `kind` exige. Si incluye `lab`, la ruta y los comandos deben existir y usar FVM.
 
 ## Documentación oficial
 
@@ -62,11 +108,13 @@ Enseña a leer encabezados, firmas, tipos de entrada y retorno, null safety, res
 ## Lista de revisión pedagógica
 
 - ¿Una persona que entra por enlace directo encuentra el archivo y la preparación?
+- ¿El Intento se puede responder sin leer la prosa que viene después?
 - ¿La lección muestra la sintaxis necesaria antes de pedir una predicción?
 - ¿Cada comando indica su carpeta de ejecución?
 - ¿El ejemplo evita conceptos que todavía no fueron definidos?
+- ¿La actividad de Fuente pide un encabezado concreto y no «lee la página»?
 - ¿Las pistas ayudan sin revelar la respuesta completa?
-- ¿La transferencia cambia el problema, no solo los nombres?
+- ¿El repaso del día 21 cambia el problema, no solo los nombres?
 - ¿La fuente oficial responde realmente la pregunta planteada?
 - ¿El cierre dice con claridad qué viene después?
 

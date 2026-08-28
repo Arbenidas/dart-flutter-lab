@@ -140,7 +140,9 @@ test('sin JavaScript la lección conserva teoría, navegación y documentación'
   await expect(
     page.getByRole('heading', { level: 1, name: 'Tu primer programa en Dart' }),
   ).toBeVisible();
-  await expect(page.getByRole('link', { name: 'dart run' })).toBeVisible();
+  // La actividad de Fuente y el panel lateral enlazan la misma referencia declarada.
+  await expect(page.getByRole('link', { name: 'dart run' }).first()).toBeVisible();
+  expect(await page.getByRole('link', { name: 'dart run' }).count()).toBe(2);
   await expect(
     page.getByRole('link', { name: 'Descargar laboratorio Dart' }).first(),
   ).toBeVisible();

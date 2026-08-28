@@ -6,11 +6,11 @@
   "title": "Paquetes, bibliotecas y documentación",
   "summary": "Organiza código reusable, domina pub y aprende a evaluar APIs oficiales.",
   "status": "available",
-  "estimatedHours": 7,
+  "estimatedHours": 2.5,
   "prerequisites": ["D12"],
   "outcomes": [
     "Gestionar dependencias con restricciones de versión conscientes.",
     "Publicar documentación que explique contratos y no repita la implementación."
   ],
-  "lessonIds": ["D13-L01"]
+  "lessonIds": ["D13-L01", "D13-L02", "D13-L03"]
 }

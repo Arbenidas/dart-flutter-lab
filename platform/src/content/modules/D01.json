@@ -6,11 +6,11 @@
   "title": "Tipos, valores y variables",
   "summary": "Construye un modelo mental de referencias, inferencia, mutabilidad y constantes.",
   "status": "available",
-  "estimatedHours": 5,
+  "estimatedHours": 4.5,
   "prerequisites": ["D00"],
   "outcomes": [
     "Elegir entre var, final y const justificando la decisión.",
     "Leer errores de tipos y corregir su causa en lugar de ocultarlos."
   ],
-  "lessonIds": ["D01-L01"]
+  "lessonIds": ["D01-L01", "D01-L02", "D01-L03", "D01-L04", "D01-L05"]
 }

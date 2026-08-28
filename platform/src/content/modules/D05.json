@@ -6,11 +6,11 @@
   "title": "Colecciones e iterables",
   "summary": "Modela grupos de datos y transforma secuencias sin mutaciones accidentales.",
   "status": "available",
-  "estimatedHours": 7,
+  "estimatedHours": 4.5,
   "prerequisites": ["D04"],
   "outcomes": [
     "Elegir List, Set o Map según las invariantes del dominio.",
     "Construir pipelines legibles con Iterable y evaluar su costo."
   ],
-  "lessonIds": ["D05-L01"]
+  "lessonIds": ["D05-L01", "D05-L02", "D05-L03", "D05-L04", "D05-L05"]
 }

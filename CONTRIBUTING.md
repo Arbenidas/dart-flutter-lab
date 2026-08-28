@@ -38,7 +38,9 @@ npx playwright install chromium firefox webkit
 
 - Lee [la guía curricular](docs/CURRICULUM.md).
 - Define los términos antes de usarlos y asume cero conocimiento previo.
-- Conserva la secuencia PENSAR: Predice, Escribe, Nombra, Sustenta, Argumenta y Reaplica.
+- Conserva el ciclo de evidencia: Intento, Evidencia, Fuente y Criterio. Los movimientos obligatorios dependen del `kind` de la lección.
+- Escribe los cuatro `reviewPrompts` como escalera: recordar (día 1), reescribir (día 3), explicar (día 7) y transferir (día 21).
+- Una lección es una sesión: mantenla entre 20 y 90 minutos.
 - Usa fuentes oficiales de Dart, Flutter o paquetes; registra versión y fecha de verificación.
 - No menciones un archivo local sin incluirlo, enlazar su descarga o explicar explícitamente que el estudiante debe crearlo.
 - Evita introducir una abstracción antes de que resuelva un problema que el estudiante ya reconoce.

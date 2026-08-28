@@ -43,10 +43,11 @@ const modules = defineCollection({
 
 const activitySchema = z.object({
   id: z.string().min(1),
-  kind: z.enum(['predict', 'code', 'debug', 'explain', 'transfer', 'docs']),
+  kind: z.enum(['attempt', 'evidence', 'source', 'judgment']),
   prompt: z.string().min(1),
   required: z.boolean(),
   hints: z.array(z.string().min(1)).max(3),
+  sourceLabel: z.string().min(1).optional(),
 });
 
 const docRefSchema = z.object({
@@ -63,6 +64,7 @@ const labSchema = z.object({
   testCommand: z.string().min(1),
   analyzeCommand: z.string().min(1),
   exerciseId: z.string().min(1).optional(),
+  revealReference: z.boolean().default(false),
 });
 
 const lessons = defineCollection({
@@ -71,14 +73,15 @@ const lessons = defineCollection({
     id: lessonIdSchema,
     trackId: trackIdSchema,
     moduleId: moduleIdSchema,
+    kind: z.enum(['concepto', 'taller', 'proyecto']),
     order: z.number().int().nonnegative(),
     slug: z.string().min(1),
     title: z.string().min(1),
     summary: z.string().min(1),
-    estimatedMinutes: z.number().int().positive(),
+    estimatedMinutes: z.number().int().min(20).max(90),
     objectives: z.array(z.string().min(1)).min(2),
     prerequisites: z.array(lessonIdSchema),
-    activities: z.array(activitySchema).min(6),
+    activities: z.array(activitySchema).min(4).max(8),
     docRefs: z.array(docRefSchema).min(1),
     reviewPrompts: z.array(z.string().min(1)).length(4),
     lab: labSchema.optional(),

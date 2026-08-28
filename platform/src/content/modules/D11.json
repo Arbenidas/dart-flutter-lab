@@ -6,11 +6,11 @@
   "title": "Concurrencia e isolates",
   "summary": "Separa asincronía de paralelismo y mueve trabajo intensivo fuera del isolate principal.",
   "status": "available",
-  "estimatedHours": 6,
+  "estimatedHours": 4,
   "prerequisites": ["D10"],
   "outcomes": [
     "Identificar cuándo un Future no evita bloquear la ejecución.",
     "Comunicar isolates mediante mensajes sin compartir memoria mutable."
   ],
-  "lessonIds": ["D11-L01"]
+  "lessonIds": ["D11-L01", "D11-L02", "D11-L03", "D11-L04", "D11-L05"]
 }

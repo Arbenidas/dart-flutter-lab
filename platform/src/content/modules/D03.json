@@ -6,11 +6,11 @@
   "title": "Decisiones, ciclos y patterns",
   "summary": "Expresa reglas de negocio con ramas exhaustivas, iteración y desestructuración.",
   "status": "available",
-  "estimatedHours": 6,
+  "estimatedHours": 4.5,
   "prerequisites": ["D02"],
   "outcomes": [
     "Elegir entre if, switch y ciclos según la forma del problema.",
     "Comprobar límites y casos faltantes antes de ejecutar."
   ],
-  "lessonIds": ["D03-L01"]
+  "lessonIds": ["D03-L01", "D03-L02", "D03-L03", "D03-L04", "D03-L05"]
 }

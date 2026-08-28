@@ -6,11 +6,11 @@
   "title": "Proyecto: bitácora CRUD verificable",
   "summary": "Integra layout, estado, formularios y arquitectura en una bitácora con repositorio en memoria y pruebas por capa.",
   "status": "available",
-  "estimatedHours": 12,
+  "estimatedHours": 4.9,
   "prerequisites": ["F05"],
   "outcomes": [
     "Completar y explicar el flujo crear, leer, editar y eliminar una entrada.",
     "Proteger Repository, ViewModel y View con pruebas unitarias y de widgets."
   ],
-  "lessonIds": ["F06-L01"]
+  "lessonIds": ["F06-L01", "F06-L02", "F06-L03", "F06-L04", "F06-L05"]
 }

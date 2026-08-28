@@ -6,11 +6,11 @@
   "title": "Testing y calidad de diseño",
   "summary": "Usa pruebas, lints y refactor seguro como herramientas para pensar mejor.",
   "status": "available",
-  "estimatedHours": 9,
+  "estimatedHours": 4.25,
   "prerequisites": ["D13"],
   "outcomes": [
     "Escribir pruebas que documenten comportamiento y casos borde.",
     "Distinguir un doble útil de un mock que acopla la prueba a la implementación."
   ],
-  "lessonIds": ["D14-L01"]
+  "lessonIds": ["D14-L01", "D14-L02", "D14-L03", "D14-L04", "D14-L05"]
 }

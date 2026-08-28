@@ -4,13 +4,13 @@
   "order": 0,
   "slug": "d00-aprender-a-aprender",
   "title": "Aprender a programar sin delegar el pensamiento",
-  "summary": "Prepara el entorno, entiende el laboratorio y practica el ciclo PENSAR.",
+  "summary": "Prepara el entorno, entiende el laboratorio y practica el ciclo de evidencia.",
   "status": "available",
-  "estimatedHours": 2,
+  "estimatedHours": 1.5,
   "prerequisites": [],
   "outcomes": [
     "Ejecutar un programa y el analizador desde la terminal.",
     "Distinguir una pista útil de una respuesta que evita el aprendizaje."
   ],
-  "lessonIds": ["D00-L01"]
+  "lessonIds": ["D00-L01", "D00-L02"]
 }

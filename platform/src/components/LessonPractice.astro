@@ -7,6 +7,7 @@ interface Activity {
   prompt: string;
   required: boolean;
   hints: string[];
+  sourceLabel?: string | undefined;
 }
 
 interface Lab {
@@ -15,11 +16,18 @@ interface Lab {
   testCommand: string;
   analyzeCommand: string;
   exerciseId?: string;
+  revealReference?: boolean;
+}
+
+interface DocRef {
+  label: string;
+  url: string;
 }
 
 interface Props {
   lessonId: string;
   activities: Activity[];
+  docRefs?: DocRef[];
   lab?: Lab;
   reference?:
     | {
@@ -30,27 +38,60 @@ interface Props {
     | undefined;
 }
 
-const { lessonId, activities, lab, reference } = Astro.props;
+const { lessonId, activities, docRefs = [], lab, reference } = Astro.props;
 const labCommandLabel = lab?.testCommand.includes(' dart run ')
   ? 'Ejecutar el programa'
   : 'Pruebas del ejercicio';
-const kindLabels: Record<string, string> = {
-  predict: 'Predice',
-  practice: 'Escribe',
-  code: 'Escribe',
-  debug: 'Nombra',
-  docs: 'Sustenta',
-  explain: 'Argumenta',
-  reflect: 'Argumenta',
-  transfer: 'Reaplica',
+
+const movements: Record<
+  string,
+  { label: string; question: string; evidence: 'machine' | 'written'; badge: string }
+> = {
+  attempt: {
+    label: 'Intento',
+    question: '¿Qué escribes sin mirar nada?',
+    evidence: 'written',
+    badge: 'Página en blanco',
+  },
+  evidence: {
+    label: 'Evidencia',
+    question: '¿Qué respondió la máquina?',
+    evidence: 'machine',
+    badge: 'Evidencia de máquina',
+  },
+  source: {
+    label: 'Fuente',
+    question: '¿Qué dice la documentación oficial?',
+    evidence: 'written',
+    badge: 'Fuente oficial',
+  },
+  judgment: {
+    label: 'Criterio',
+    question: '¿Qué decides y qué costo aceptas?',
+    evidence: 'written',
+    badge: 'Decisión propia',
+  },
 };
+
+const fallbackMovement = {
+  label: 'Movimiento',
+  question: '',
+  evidence: 'written' as const,
+  badge: 'Evidencia escrita',
+};
+
+const docRefByLabel = new Map(docRefs.map((docRef) => [docRef.label, docRef]));
+
+// La primera Evidencia de la lección ejecuta el ejercicio; las siguientes suelen diagnosticar un
+// fallo provocado, y para eso el analizador dice más que volver a correr los mismos tests.
+const firstEvidenceId = activities.find((activity) => activity.kind === 'evidence')?.id;
 ---
 
 <section class="practice" data-lesson-practice data-lesson-id={lessonId}>
   <header class="practice__head">
     <div>
-      <p class="eyebrow">Cuaderno PENSAR</p>
-      <h2>Haz visible tu razonamiento</h2>
+      <p class="eyebrow">Ciclo de evidencia</p>
+      <h2>Cuatro movimientos, cuatro pruebas distintas</h2>
     </div>
     <span class="status-stamp" data-lesson-stamp>En progreso</span>
   </header>
@@ -61,57 +102,142 @@ const kindLabels: Record<string, string> = {
 
   <div class="activity-list">
     {
-      activities.map((activity, index) => (
-        <article
-          class="activity"
-          data-activity={activity.id}
-          data-required={String(activity.required)}
-        >
-          <header class="activity__head">
-            <span class="activity__step" aria-hidden="true">
-              {String(index + 1).padStart(2, '0')}
-            </span>
-            <div>
-              <h3>{kindLabels[activity.kind] ?? activity.kind}</h3>
-              <p>{activity.prompt}</p>
-            </div>
-          </header>
+      activities.map((activity, index) => {
+        const movement = movements[activity.kind] ?? fallbackMovement;
+        const docRef = activity.sourceLabel ? docRefByLabel.get(activity.sourceLabel) : undefined;
+        return (
+          <article
+            class="activity"
+            data-activity={activity.id}
+            data-required={String(activity.required)}
+            data-movement={activity.kind}
+            data-evidence={movement.evidence}
+          >
+            <header class="activity__head">
+              <span class="activity__step" aria-hidden="true">
+                {String(index + 1).padStart(2, '0')}
+              </span>
+              <div>
+                <div class="activity__title">
+                  <h3>{movement.label}</h3>
+                  <span class="activity__badge">{movement.badge}</span>
+                </div>
+                {movement.question && <p class="activity__question">{movement.question}</p>}
+                <p>{activity.prompt}</p>
+              </div>
+            </header>
 
-          {['predict', 'debug', 'docs', 'explain', 'reflect', 'transfer'].includes(
-            activity.kind,
-          ) && (
-            <div class="field">
-              <label for={`${lessonId}-${activity.id}`}>Escribe con tus palabras</label>
-              <textarea
-                id={`${lessonId}-${activity.id}`}
-                rows="4"
-                maxlength="5000"
-                data-activity-response={activity.id}
-                placeholder="Una hipótesis breve, un caso borde o una explicación…"
-              />
-              <span class="field__helper">Se guarda localmente al salir del campo.</span>
-            </div>
-          )}
+            {activity.kind === 'attempt' && (
+              <div class="field">
+                <label for={`${lessonId}-${activity.id}`}>Antes de mirar nada</label>
+                <textarea
+                  id={`${lessonId}-${activity.id}`}
+                  rows="4"
+                  maxlength="5000"
+                  data-activity-response={activity.id}
+                  placeholder="Lo que creo que pasa, y por qué. Equivocarse aquí es parte del trabajo…"
+                />
+                <span class="field__helper">
+                  Responde con lo que ya sabes. No abras la documentación todavía.
+                </span>
+              </div>
+            )}
 
-          {activity.hints.length > 0 && (
-            <div class="hint-stack" aria-label="Pistas socráticas">
-              {activity.hints.map((hint, hintIndex) => (
-                <details data-hint-id={`${activity.id}-h${hintIndex + 1}`}>
-                  <summary>Pista {hintIndex + 1}</summary>
-                  <p>{hint}</p>
-                </details>
-              ))}
-            </div>
-          )}
+            {activity.kind === 'evidence' && (
+              <div class="field">
+                {lab &&
+                  (activity.id === firstEvidenceId ? (
+                    <CommandBlock command={lab.testCommand} label={labCommandLabel} />
+                  ) : (
+                    <CommandBlock command={lab.analyzeCommand} label="Análisis estático" />
+                  ))}
+                <label for={`${lessonId}-${activity.id}`}>
+                  Pega la línea exacta del resultado o del error
+                </label>
+                <input
+                  id={`${lessonId}-${activity.id}`}
+                  type="text"
+                  maxlength="5000"
+                  data-activity-response={activity.id}
+                  placeholder="Ejemplo: Expected: 12 · Actual: 11"
+                />
+                <span class="field__helper">
+                  Copia lo que dijo la máquina, no tu resumen de lo que dijo.
+                </span>
+              </div>
+            )}
 
-          <label class="activity-check">
-            <input type="checkbox" data-activity-check={activity.id} />
-            <span>
-              {activity.required ? 'Hice esta evidencia' : 'También practiqué esta variante'}
-            </span>
-          </label>
-        </article>
-      ))
+            {activity.kind === 'source' && (
+              <div class="field field--source">
+                {docRef && (
+                  <p class="source-link">
+                    Fuente declarada:{' '}
+                    <a href={docRef.url} target="_blank" rel="noreferrer">
+                      {docRef.label}
+                      <span class="visually-hidden"> (se abre en una pestaña nueva)</span>
+                    </a>
+                  </p>
+                )}
+                <label for={`${lessonId}-${activity.id}-heading`}>
+                  Encabezado exacto que responde tu pregunta
+                </label>
+                <input
+                  id={`${lessonId}-${activity.id}-heading`}
+                  type="text"
+                  maxlength="300"
+                  data-activity-response={`${activity.id}:heading`}
+                  placeholder="Ejemplo: Type inference"
+                />
+                <label for={`${lessonId}-${activity.id}`}>Con tus palabras</label>
+                <textarea
+                  id={`${lessonId}-${activity.id}`}
+                  rows="3"
+                  maxlength="5000"
+                  data-activity-response={activity.id}
+                  placeholder="La regla que leíste, parafraseada. Sin copiar el párrafo…"
+                />
+                <span class="field__helper">
+                  Citar el encabezado es la mitad de aprender a leer documentación.
+                </span>
+              </div>
+            )}
+
+            {activity.kind === 'judgment' && (
+              <div class="field">
+                <label for={`${lessonId}-${activity.id}`}>Tu decisión y su costo</label>
+                <textarea
+                  id={`${lessonId}-${activity.id}`}
+                  rows="5"
+                  maxlength="5000"
+                  data-activity-response={activity.id}
+                  placeholder={'Elegí…\nDescarté…\nEl costo que acepto es…'}
+                />
+                <span class="field__helper">
+                  Una decisión sin alternativa descartada todavía no es criterio.
+                </span>
+              </div>
+            )}
+
+            {activity.hints.length > 0 && (
+              <div class="hint-stack" aria-label="Pistas socráticas">
+                {activity.hints.map((hint, hintIndex) => (
+                  <details data-hint-id={`${activity.id}-h${hintIndex + 1}`}>
+                    <summary>Pista {hintIndex + 1}</summary>
+                    <p>{hint}</p>
+                  </details>
+                ))}
+              </div>
+            )}
+
+            <label class="activity-check">
+              <input type="checkbox" data-activity-check={activity.id} />
+              <span>
+                {activity.required ? 'Hice esta evidencia' : 'También practiqué esta variante'}
+              </span>
+            </label>
+          </article>
+        );
+      })
     }
   </div>
 
@@ -168,6 +294,10 @@ const kindLabels: Record<string, string> = {
     >
     <p class="completion-help" data-completion-help>
       Completa las evidencias requeridas para cerrar.
+    </p>
+    <p class="completion-help">
+      Al confirmar arranca la escalera de repaso: recordar mañana, reescribir al día 3, explicar al
+      día 7 y transferir al día 21.
     </p>
   </section>
 
@@ -360,6 +490,7 @@ const kindLabels: Record<string, string> = {
   }
 
   .activity__head {
+    flex-wrap: wrap;
     justify-content: flex-start;
   }
 
@@ -382,9 +513,9 @@ const kindLabels: Record<string, string> = {
     font-weight: 700;
   }
 
-  textarea {
+  textarea,
+  .field input[type='text'] {
     width: 100%;
-    min-height: 7rem;
     resize: vertical;
     padding: var(--space-sm);
     border: var(--rule-strong) solid var(--color-ink);
@@ -393,12 +524,80 @@ const kindLabels: Record<string, string> = {
     background: var(--color-paper-raised);
   }
 
-  textarea:hover {
+  textarea {
+    min-height: 7rem;
+  }
+
+  .field input[type='text'] {
+    min-height: 3rem;
+    font-family: var(--font-mono);
+    font-size: var(--text-sm);
+  }
+
+  textarea:hover,
+  .field input[type='text']:hover {
     background: var(--color-paper);
   }
 
-  textarea:focus-visible {
+  textarea:focus-visible,
+  .field input[type='text']:focus-visible {
     outline-color: var(--color-focus);
+  }
+
+  .activity__question {
+    margin-block-end: var(--space-2xs);
+    color: var(--color-ink-muted);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+  }
+
+  .activity__title {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-sm);
+  }
+
+  .activity__title h3 {
+    margin-block-end: 0;
+  }
+
+  .activity__badge {
+    flex: 0 0 auto;
+    padding: var(--space-2xs) var(--space-xs);
+    border: var(--rule-thin) solid var(--color-rule);
+    font-family: var(--font-mono);
+    font-size: var(--text-xs);
+    font-weight: 700;
+  }
+
+  .activity[data-evidence='machine'] {
+    padding-inline-start: var(--space-md);
+    border-inline-start: 0.5rem solid var(--color-acid);
+  }
+
+  .activity[data-evidence='machine'] .activity__badge {
+    border-color: var(--color-ink);
+    background: var(--color-acid);
+    color: var(--color-acid-ink);
+  }
+
+  .field--source {
+    gap: var(--space-sm);
+  }
+
+  .source-link {
+    margin: 0;
+    color: var(--color-ink-muted);
+    font-size: var(--text-sm);
+  }
+
+  @media (max-width: 47.999rem) {
+    .activity__badge {
+      margin-inline-start: 0;
+    }
   }
 
   .field__helper {
