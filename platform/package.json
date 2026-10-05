@@ -23,31 +23,31 @@
     "format": "prettier --write ."
   },
   "dependencies": {
-    "@astrojs/sitemap": "3.7.3",
+    "@astrojs/sitemap": "3.7.4",
     "@fontsource/archivo-black": "5.3.0",
     "@fontsource/atkinson-hyperlegible": "5.3.0",
     "@fontsource/jetbrains-mono": "5.3.0",
     "astro": "6.4.8",
-    "dexie": "4.4.5"
+    "dexie": "4.4.6"
   },
   "devDependencies": {
     "@astrojs/check": "0.9.10",
     "@axe-core/playwright": "4.13.0",
     "@eslint/js": "10.0.1",
     "@lhci/cli": "0.15.1",
-    "@playwright/test": "1.62.1",
+    "@playwright/test": "1.63.0",
     "@types/archiver": "8.0.0",
     "archiver": "8.0.0",
-    "eslint": "10.9.0",
-    "eslint-plugin-astro": "3.1.0",
+    "eslint": "10.12.0",
+    "eslint-plugin-astro": "3.2.1",
     "fake-indexeddb": "6.2.5",
-    "globals": "17.11.0",
+    "globals": "17.13.0",
     "pagefind": "1.5.2",
-    "prettier": "3.9.6",
+    "prettier": "3.9.9",
     "prettier-plugin-astro": "0.14.1",
     "typescript": "6.0.3",
-    "typescript-eslint": "8.67.0",
+    "typescript-eslint": "8.71.0",
     "vitest": "4.1.11",
-    "yaml": "2.9.0"
+    "yaml": "2.9.1"
   }
 }
